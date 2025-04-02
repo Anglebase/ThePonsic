@@ -1,6 +1,7 @@
 mod events;
 mod safe_proc;
 mod win;
+pub mod graphics;
 
 pub use events::*;
 pub use safe_proc::*;

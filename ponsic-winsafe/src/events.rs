@@ -1,5 +1,7 @@
 use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
 
+use crate::graphics::context::Context;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum KeyCode {
     A,
@@ -194,7 +196,9 @@ pub enum Event {
     Input {
         ch: u16,
     },
-    Paint,
+    Paint{
+        context: Context,
+    },
     Destroy,
     Create,
     Other {

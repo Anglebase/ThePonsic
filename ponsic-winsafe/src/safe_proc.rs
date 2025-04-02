@@ -1,4 +1,4 @@
-use crate::{events::*, win::window::WindowHandle};
+use crate::{events::*, graphics::context::Context, win::window::WindowHandle};
 use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
 pub use winapi::shared::windef::HWND;
 use winapi::um::winuser::*;
@@ -147,7 +147,7 @@ fn vk_to_key(vk: i32) -> KeyCode {
     }
 }
 
-pub fn translate(msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
+pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
     match msg {
         WM_LBUTTONDOWN | WM_LBUTTONUP | WM_LBUTTONDBLCLK | WM_MBUTTONDOWN | WM_MBUTTONUP
         | WM_MBUTTONDBLCLK | WM_RBUTTONDOWN | WM_RBUTTONUP | WM_RBUTTONDBLCLK | WM_XBUTTONDOWN
@@ -158,7 +158,9 @@ pub fn translate(msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
         WM_CHAR => translate_text_input_event(wparam),
         WM_DESTROY => Event::Destroy,
         WM_CREATE => Event::Create,
-        WM_PAINT => Event::Paint,
+        WM_PAINT => Event::Paint {
+            context: unsafe { Context::from_raw(hwnd) },
+        },
         _ => Event::Other {
             msg,
             wparam,
@@ -296,8 +298,8 @@ macro_rules! wndproc {
                 let __f = $($f)*;
                 let __result = __f(
                     $crate::Events {
-                        window: unsafe{$crate::WindowHandle::from_raw(hwnd)},
-                        event: $crate::translate(msg, wparam, lparam),
+                        window: unsafe{ $crate::WindowHandle::from_raw(hwnd) },
+                        event: $crate::translate(hwnd, msg, wparam, lparam),
                     }
                 );
                 if let Some(__result) = __result {
