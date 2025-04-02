@@ -285,7 +285,7 @@ pub struct Events {
 ///
 /// # Param
 /// 传入的函数应符合 `impl Fn(Events) -> Option<isize>` 且无外部捕获的非全局变量
-/// + 若该函数返回 `None` 则将后续处理交由默认函数
+/// + 若该函数返回 `None` 则将后续处理交由默认处理过程函数
 /// + 若该函数返回 `Some(isize)` 则直接将内含值作为过程回调函数的返回值
 ///
 /// # Result
