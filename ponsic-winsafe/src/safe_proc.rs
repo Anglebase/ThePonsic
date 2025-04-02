@@ -256,17 +256,6 @@ fn translate_text_input_event(w_param: WPARAM) -> Event {
     Event::Input { ch: w_param as _ }
 }
 
-pub trait Call {
-    fn call(self, f: impl Fn(Event) -> isize) -> isize;
-}
-
-impl Call for (u32, usize, isize) {
-    fn call(self, f: impl Fn(Event) -> isize) -> isize {
-        let (msg, wparam, lparam) = self;
-        f(translate(msg, wparam, lparam))
-    }
-}
-
 pub fn default_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
     return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
 }
