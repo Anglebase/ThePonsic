@@ -6,8 +6,8 @@ pub use types::*;
 use winapi::{
     shared::windef::{HDC, HWND},
     um::{
-        wingdi::{Arc, LineTo, MoveToEx, Polyline},
-        winuser::{BeginPaint, COLOR_WINDOW, EndPaint, FillRect, PAINTSTRUCT},
+        wingdi::*,
+        winuser::*,
     },
 };
 
