@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+gom = "0.1.7"
 lazy_static = "1.5.0"
 ponsic = { path = "../ponsic" }

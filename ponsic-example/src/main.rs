@@ -1,3 +1,4 @@
+use gom::Registry;
 use ponsic::{App, WindowManager, WindowStyle};
 use ponsic_example::*;
 use std::error::Error;
@@ -8,6 +9,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .set_title("Ponsic 应用程序")
         .set_style(&[WindowStyle::OverlappedWindow])
         .build()?;
+
+    Registry::register("MainWindow", window.id()).unwrap();
 
     let button = BUTTON_CLASS
         .window_builder(10, 10, 100, 50)

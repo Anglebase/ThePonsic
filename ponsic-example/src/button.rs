@@ -1,3 +1,4 @@
+use gom::Registry;
 use lazy_static::lazy_static;
 use ponsic::{
     graphics::context_2d::{Context2D, Rect},
@@ -12,7 +13,7 @@ fn paint(context: Context2D<'_>) {
         bottom: 50,
     });
 }
-
+pub const BUTTON_DOWN: u32 = 0;
 fn button_process(Events { event, .. }: Events) -> Option<isize> {
     match event {
         Event::Destroy => {
@@ -27,6 +28,9 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
             if (Button::Left, ButtonStatus::Down) == (button, status) =>
         {
             println!("Button pressed");
+            Registry::with("MainWindow", |id: &WindowId| {
+                Window::post(*id, BUTTON_DOWN, 0, 0).unwrap();
+            });
             Some(0)
         }
         _ => None,
