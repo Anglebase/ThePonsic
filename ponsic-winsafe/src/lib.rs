@@ -9,4 +9,5 @@ pub use win::{
     app::App,
     class::*,
     window::*,
+    error::*,
 };

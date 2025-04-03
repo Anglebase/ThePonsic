@@ -1,8 +1,8 @@
+use crate::check_error;
 use crate::safe_proc::WndProc;
 use crate::win::window;
 use std::ptr::null_mut;
 use winapi::shared::windef::{HBRUSH, HCURSOR};
-use winapi::um::errhandlingapi::GetLastError;
 use winapi::um::libloaderapi::GetModuleHandleW;
 use winapi::um::winuser::*;
 
@@ -202,15 +202,7 @@ impl Registrar {
             };
             let result = RegisterClassExW(&window_class_msg);
             if result == 0 {
-                let error_code = GetLastError();
-                let error_message = format!(
-                    "Failed to Create Class '{}':Error code{}",
-                    self.name, error_code
-                );
-                let error = ClassError {
-                    message: error_message,
-                };
-                return Err(Box::new(error));
+                check_error()?;
             }
         }
         Ok(Class::new(&self.name))

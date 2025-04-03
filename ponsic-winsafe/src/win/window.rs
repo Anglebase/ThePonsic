@@ -4,10 +4,11 @@ use std::ops::{Index, IndexMut};
 use std::ptr::{null, null_mut};
 use winapi::shared::minwindef::BOOL;
 use winapi::shared::windef::*;
-use winapi::um::errhandlingapi::GetLastError;
 use winapi::um::libloaderapi::GetModuleHandleW;
 use winapi::um::winnt::{HANDLE, LPCWSTR};
 use winapi::um::winuser::*;
+
+use crate::{check_error, SystemError};
 
 /// 参考 [WIN32 窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/window-styles)
 /// 及 [WIN32 扩展窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/extended-window-styles)
@@ -253,11 +254,10 @@ impl Window {
     ///
     /// # Note
     /// 此函数的调用是异步的，它不等待回调函数对消息进行处理，直接返回，此函数不应传递引用
-    pub fn post(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> Result<i32, u32> {
+    pub fn post(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> Result<i32, SystemError> {
         match unsafe { PostMessageW(window.handle as _, msg + WM_USER, wparam, lparam) } {
             0 => {
-                let err = unsafe { GetLastError() };
-                Err(err)
+                Err(check_error().unwrap_err())
             }
             res @ _ => Ok(res),
         }
@@ -279,11 +279,10 @@ impl Window {
         msg: u32,
         wparam: usize,
         lparam: isize,
-    ) -> Result<i32, u32> {
+    ) -> Result<i32, SystemError> {
         match unsafe { PostMessageW(window.handle as _, msg, wparam, lparam) } {
             0 => {
-                let err = unsafe { GetLastError() };
-                Err(err)
+                Err(check_error().unwrap_err())
             }
             res @ _ => Ok(res),
         }
@@ -558,13 +557,7 @@ impl Builder {
                 null_mut(),
             );
             if handle.is_null() {
-                let error_code = GetLastError();
-                let error_message = format!("Failed to Create Window '{}'", self.title);
-                let error = WindowError {
-                    message: error_message,
-                    code: error_code,
-                };
-                return Err(Box::new(error));
+                check_error()?;
             }
             handle
         };

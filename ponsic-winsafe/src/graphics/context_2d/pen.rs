@@ -1,7 +1,8 @@
 use std::ptr::null;
 use winapi::shared::windef::HPEN;
-use winapi::um::errhandlingapi::GetLastError;
 use winapi::um::wingdi::*;
+
+use crate::{SystemError, check_error};
 
 use super::Color;
 
@@ -144,7 +145,7 @@ impl GenPen<'_> {
         self.create_by_ref().unwrap()
     }
 
-    pub(crate) fn create_by_ref(&self) -> Result<Pen, u32> {
+    pub(crate) fn create_by_ref(&self) -> Result<Pen, SystemError> {
         let brush = LOGBRUSH {
             lbStyle: self.pen_style.to_sys_enum(),
             lbColor: self.color.into(),
@@ -177,10 +178,10 @@ impl GenPen<'_> {
                 )
             }
         };
+
         if hpen.is_null() {
-            Err(unsafe { GetLastError() })
-        } else {
-            Ok(Pen { pen: hpen })
+            check_error()?;
         }
+        Ok(Pen { pen: hpen })
     }
 }

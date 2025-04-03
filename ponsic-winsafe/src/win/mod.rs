@@ -1,6 +1,7 @@
 pub mod app;
 pub mod class;
 pub mod window;
+pub mod error;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
