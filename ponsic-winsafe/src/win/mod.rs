@@ -19,7 +19,7 @@ mod tests {
         if let Event::Destroy = event {
             App::should_exit(0);
             Some(0)
-        }else{
+        } else {
             None
         }
     }
@@ -37,7 +37,7 @@ mod tests {
             .build()?;
 
         window.show();
-        App::handle_events();
+        while App::handle_event(true).unwrap_or(true) {}
         Ok(())
     }
 
@@ -63,7 +63,7 @@ mod tests {
 
         window.show();
         btn.show();
-        App::handle_events();
+        while App::handle_event(true).unwrap_or(true) {}
         Ok(())
     }
 }

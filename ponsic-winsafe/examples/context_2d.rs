@@ -54,5 +54,5 @@ fn main() {
         .unwrap();
 
     window.show();
-    App::handle_events();
+    while App::handle_event(true).unwrap_or(true) {}
 }

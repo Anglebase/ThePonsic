@@ -45,9 +45,10 @@ fn main() {
 
         window.show();
 
-        App::handle_events();
+        while App::handle_event(true).unwrap_or(true) {}
     });
 
-    App::handle_events();
+    while App::handle_event(true).unwrap_or(true) {}
+
     join.join().unwrap();
 }
