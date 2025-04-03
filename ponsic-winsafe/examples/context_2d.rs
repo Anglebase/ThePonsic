@@ -1,7 +1,4 @@
-use ponsic_winsafe::{
-    graphics::context_2d::*,
-    wndproc, *,
-};
+use ponsic_winsafe::{graphics::context_2d::*, wndproc, *};
 
 fn paint(mut context: Context2D<'_>) {
     context.clear();
@@ -30,7 +27,33 @@ fn paint(mut context: Context2D<'_>) {
     context.set_line_style(LineStyle::Null);
 
     context.set_brush_color(Color::from_gray(128));
-    context.rectangle(Rect { left: 200, top: 200, right: 250, bottom: 300 });
+    context.rectangle(Rect {
+        left: 200,
+        top: 200,
+        right: 250,
+        bottom: 300,
+    });
+
+    let mut rect = Rect::from_pos_size(
+        Point { x: 10, y: 10 },
+        Size {
+            width: 100,
+            height: 50,
+        },
+    );
+
+    context.set_font_height(16);
+    context.set_font_name("宋体");
+
+    context.draw_text(
+        "123",
+        &mut rect,
+        &[
+            DrawTextMode::Center,
+            DrawTextMode::VCenter,
+            DrawTextMode::SingleLine,
+        ],
+    );
 }
 
 fn process(Events { event, .. }: Events) -> Option<isize> {

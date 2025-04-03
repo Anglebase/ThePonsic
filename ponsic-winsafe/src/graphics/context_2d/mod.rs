@@ -1,6 +1,7 @@
 mod brush;
 mod color;
 mod pen;
+mod text;
 mod types;
 use std::{fmt::Debug, ptr::null_mut};
 
@@ -8,6 +9,7 @@ use super::context::Context;
 pub use brush::*;
 pub use color::*;
 pub use pen::*;
+pub use text::*;
 pub use types::*;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -22,6 +24,8 @@ pub struct Context2D<'a> {
     pen: Pen,
     brush_data: GenBrush,
     brush: Brush,
+    font_data: GenFont,
+    font: Font,
 }
 
 impl Debug for Context2D<'_> {
@@ -46,6 +50,8 @@ impl Context2D<'_> {
             pen: GenPen::default().create(),
             brush_data: GenBrush::Solid(Color::from_gray(255)),
             brush: GenBrush::Solid(Color::from_gray(255)).create(),
+            font_data: GenFont::default(),
+            font: GenFont::default().create(),
         }
     }
 }
@@ -345,6 +351,112 @@ impl Context2D<'_> {
                 count.as_ptr() as _,
                 count.len() as _,
             );
+        }
+    }
+}
+
+impl Context2D<'_> {
+    pub fn out_text(&self, text: &str, p: Point) {
+        let text: Vec<u16> = text.encode_utf16().collect();
+        unsafe {
+            TextOutW(self.hdc, p.x, p.y, text.as_ptr(), text.len() as _);
+        }
+    }
+}
+
+impl Context2D<'_> {
+    fn update_font(&mut self) {
+        self.font = self.font_data.create_by_ref();
+        unsafe {
+            SelectObject(self.hdc, self.font.handle() as _);
+        }
+    }
+
+    pub fn set_font_height(&mut self, height: i32) {
+        self.font_data.height = height;
+        self.update_font();
+    }
+
+    pub fn set_font_width(&mut self, width: i32) {
+        self.font_data.widht = width;
+        self.update_font();
+    }
+
+    pub fn set_font_escapement(&mut self, escapement: i32) {
+        self.font_data.escapement = escapement;
+        self.update_font();
+    }
+
+    pub fn set_font_orientation(&mut self, orientation: i32) {
+        self.font_data.orientation = orientation;
+        self.update_font();
+    }
+
+    pub fn set_font_weight(&mut self, weight: FontWeight) {
+        self.font_data.weight = weight;
+        self.update_font();
+    }
+
+    pub fn set_font_italic(&mut self, italic: bool) {
+        self.font_data.italic = italic;
+        self.update_font();
+    }
+
+    pub fn set_font_underline(&mut self, underline: bool) {
+        self.font_data.underline = underline;
+        self.update_font();
+    }
+
+    pub fn set_font_strikeout(&mut self, strikeout: bool) {
+        self.font_data.strikeout = strikeout;
+        self.update_font();
+    }
+
+    pub fn set_font_charset(&mut self, charset: CharSet) {
+        self.font_data.charset = charset;
+        self.update_font();
+    }
+
+    pub fn set_font_outprecision(&mut self, outprecision: OutPrecision) {
+        self.font_data.outprecision = outprecision;
+        self.update_font();
+    }
+
+    pub fn set_font_clipprecision(&mut self, clipprecision: ClipPrecision) {
+        self.font_data.clipprecision = clipprecision;
+        self.update_font();
+    }
+
+    pub fn set_font_quality(&mut self, quality: Quality) {
+        self.font_data.quality = quality;
+        self.update_font();
+    }
+
+    pub fn set_font_pitch(&mut self, pitch: Pitch) {
+        self.font_data.pitch = pitch;
+        self.update_font();
+    }
+
+    pub fn set_font_family(&mut self, family: FontFamily) {
+        self.font_data.family = family;
+        self.update_font();
+    }
+
+    pub fn set_font_name(&mut self, name: &str) {
+        self.font_data.name = String::from(name);
+        self.update_font();
+    }
+
+    pub fn set_font(&mut self, font: Font) {
+        self.font = font;
+        unsafe {
+            SelectObject(self.hdc, self.font.handle() as _);
+        }
+    }
+
+    pub unsafe fn set_font_uncatch(&mut self, font: &Font) {
+        unsafe {
+            SelectObject(self.hdc, font.handle() as _);
         }
     }
 }
