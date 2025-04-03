@@ -1,5 +1,5 @@
 use ponsic_winsafe::{
-    graphics::context_2d::{Color, Context2D, JoinStyle, Point, Rect},
+    graphics::context_2d::*,
     wndproc, *,
 };
 
@@ -26,6 +26,8 @@ fn paint(mut context: Context2D<'_>) {
     context.set_join_style(JoinStyle::Round);
     context.arc(rect, p1, p2);
     context.polyline(&rect.to_polyline());
+
+    context.set_line_style(LineStyle::Null);
 
     context.set_brush_color(Color::from_gray(128));
     context.rectangle(Rect { left: 200, top: 200, right: 250, bottom: 300 });

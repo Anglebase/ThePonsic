@@ -95,6 +95,18 @@ impl Context2D<'_> {
             );
         }
     }
+
+    pub fn angle_arc(&self, orgin: Point, radius: u32, start: f32, end: f32) {
+        unsafe {
+            AngleArc(self.hdc, orgin.x, orgin.y, radius, start, end);
+        }
+    }
+
+    pub fn poly_bezier(&self, points: &[Point]) {
+        unsafe {
+            PolyBezier(self.hdc, points.as_ptr() as _, points.len() as _);
+        }
+    }
 }
 
 impl<'a> Context2D<'a> {
@@ -183,6 +195,36 @@ impl Context2D<'_> {
             );
         }
     }
+
+    pub fn chord(&self, rect: Rect, p1: Point, p2: Point) {
+        unsafe {
+            Chord(
+                self.hdc,
+                rect.left,
+                rect.top,
+                rect.right,
+                rect.bottom,
+                p1.x,
+                p1.y,
+                p2.x,
+                p2.y,
+            );
+        }
+    }
+
+    pub fn round_rect(&self, rect: Rect, dx: u32, dy: u32) {
+        unsafe {
+            RoundRect(
+                self.hdc,
+                rect.left,
+                rect.top,
+                rect.right,
+                rect.bottom,
+                dx as _,
+                dy as _,
+            );
+        }
+    }
 }
 
 impl Context2D<'_> {
@@ -219,6 +261,90 @@ impl Context2D<'_> {
     pub unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
         unsafe {
             SelectObject(self.hdc, brush.handle() as _);
+        }
+    }
+}
+
+impl Context2D<'_> {
+    pub fn begin_path(&self) {
+        unsafe {
+            BeginPath(self.hdc);
+        }
+    }
+
+    pub fn end_path(&self) {
+        unsafe {
+            EndPath(self.hdc);
+        }
+    }
+
+    pub fn move_to(&self, p: Point) {
+        unsafe {
+            MoveToEx(self.hdc, p.x, p.y, std::ptr::null_mut());
+        }
+    }
+
+    pub fn line_to(&self, p: Point) {
+        unsafe {
+            LineTo(self.hdc, p.x, p.y);
+        }
+    }
+
+    pub fn arc_to(&self, rect: Rect, p1: Point, p2: Point) {
+        unsafe {
+            ArcTo(
+                self.hdc,
+                rect.left,
+                rect.top,
+                rect.right,
+                rect.bottom,
+                p1.x,
+                p1.y,
+                p2.x,
+                p2.y,
+            );
+        }
+    }
+
+    pub fn poly_bezier_to(&self, points: &[Point]) {
+        unsafe {
+            PolyBezierTo(self.hdc, points.as_ptr() as _, points.len() as _);
+        }
+    }
+
+    pub fn polyline_to(&self, points: &[Point]) {
+        unsafe {
+            PolylineTo(self.hdc, points.as_ptr() as _, points.len() as _);
+        }
+    }
+
+    pub fn close_figure(&self) {
+        unsafe {
+            CloseFigure(self.hdc);
+        }
+    }
+}
+
+impl Context2D<'_> {
+    pub fn poly_polygon(&self, points: &[Point], count: &[u32]) {
+        unsafe {
+            PolyPolygon(
+                self.hdc,
+                points.as_ptr() as _,
+                count.as_ptr() as _,
+                count.len() as _,
+            );
+        }
+    }
+
+    pub fn poly_polyline(&self, points: &[Point], count: &[u32]) {
+        unsafe {
+            PolyPolyline(
+                self.hdc,
+                points.as_ptr() as _,
+                count.as_ptr() as _,
+                count.len() as _,
+            );
         }
     }
 }
