@@ -1,11 +1,13 @@
 mod color;
 mod pen;
+mod brush;
 mod types;
 use std::{fmt::Debug, ptr::null_mut};
 
 use super::context::Context;
 pub use color::*;
 pub use pen::*;
+pub use brush::*;
 pub use types::*;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -18,6 +20,8 @@ pub struct Context2D<'a> {
     ps: PAINTSTRUCT,
     pen_data: GenPen<'a>,
     pen: Pen,
+    brush_data: GenBrush,
+    brush: Brush,
 }
 
 impl Debug for Context2D<'_> {
@@ -40,6 +44,8 @@ impl Context2D<'_> {
             ps,
             pen_data: GenPen::default(),
             pen: GenPen::default().create(),
+            brush_data: GenBrush::Solid(Color::from_gray(255)),
+            brush: GenBrush::Solid(Color::from_gray(255)).create(),
         }
     }
 }
@@ -139,6 +145,44 @@ impl<'a> Context2D<'a> {
     pub unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
         unsafe {
             SelectObject(self.hdc, pen.handle() as _);
+        }
+    }
+}
+
+impl Context2D<'_> {
+    fn update_brush(&mut self) {
+        self.brush = self.brush_data.create_by_ref();
+        unsafe {
+            SelectObject(self.hdc, self.brush.handle() as _);
+        }
+    }
+
+    pub fn set_brush_color(&mut self, color: Color) {
+        self.brush_data = match self.brush_data {
+            GenBrush::Solid(_) => GenBrush::Solid(color),
+            GenBrush::Hatch(_, style) => GenBrush::Hatch(color, style),
+        };
+        self.update_brush();
+    }
+
+    pub fn set_brush_hatch(&mut self, style: HatchStyle) {
+        self.brush_data = match self.brush_data {
+            GenBrush::Solid(color) => GenBrush::Hatch(color, style),
+            GenBrush::Hatch(color, _) => GenBrush::Hatch(color, style),
+        };
+        self.update_brush();
+    }
+
+    pub fn set_brush(&mut self, brush: Brush) {
+        self.brush = brush;
+        unsafe {
+            SelectObject(self.hdc, self.brush.handle() as _);
+        }
+    }
+
+    pub unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
+        unsafe {
+            SelectObject(self.hdc, brush.handle() as _);
         }
     }
 }
