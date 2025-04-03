@@ -56,7 +56,7 @@ mod tests {
         let class = PreDefineClass::button();
         let btn = class
             .window_builder(100, 100, 100, 50)
-            .set_parent(&window)
+            .set_parent(window.id())
             .set_style(&[WindowStyle::Child])
             .set_title("Button")
             .build()?;

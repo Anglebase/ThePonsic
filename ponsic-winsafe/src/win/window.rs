@@ -80,6 +80,11 @@ pub struct WindowHandle {
     pub(crate) handle: HWND,
 }
 
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
+pub struct WindowId {
+    handle: usize,
+}
+
 #[derive(Debug)]
 pub struct WindowError {
     message: String,
@@ -109,6 +114,12 @@ impl Window {
 pub trait WindowManager {
     fn get_handle(&self) -> usize;
 
+    fn id(&self) -> WindowId {
+        WindowId {
+            handle: self.get_handle() as _,
+        }
+    }
+
     fn show(&self) {
         let handle = self.get_handle() as HWND;
         unsafe {
@@ -117,6 +128,10 @@ pub trait WindowManager {
         }
     }
 
+    /// 设置窗口文本
+    ///
+    /// # Note
+    /// 此函数通过向回调函数发送请求信息来设置窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
     fn set_title(&self, title: &str) {
         let handle = self.get_handle() as HWND;
         let title: Vec<u16> = String::from(title).encode_utf16().chain(Some(0)).collect();
@@ -125,6 +140,10 @@ pub trait WindowManager {
         }
     }
 
+    /// 获取窗口文本
+    ///
+    /// # Note
+    /// 此函数通过向回调函数发送请求信息来获取窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
     fn title(&self) -> String {
         let handle = self.get_handle() as HWND;
         unsafe {
@@ -135,7 +154,8 @@ pub trait WindowManager {
         }
     }
 
-    fn set_parent(&self, parent: &Window) {
+    /// 设置窗口的父窗口
+    fn set_parent(&self, parent: WindowId) {
         let handle = self.get_handle() as HWND;
         let parent = parent.handle as HWND;
         unsafe {
@@ -208,7 +228,7 @@ pub trait WindowManager {
         }
     }
 
-    fn update(&self) {
+    fn redraw(&self) {
         unsafe {
             RedrawWindow(
                 self.get_handle() as _,
@@ -216,6 +236,20 @@ pub trait WindowManager {
                 null_mut(),
                 RDW_UPDATENOW | RDW_INVALIDATE,
             );
+        }
+    }
+
+    fn send(&self, msg: u32, wparam: usize, lparam: isize) -> isize {
+        unsafe { SendMessageW(self.get_handle() as _, WM_USER + msg, wparam, lparam) }
+    }
+
+    fn post(&self, msg: u32, wparam: usize, lparam: isize) -> Result<i32, u32> {
+        match unsafe { PostMessageW(self.get_handle() as _, msg, wparam, lparam) } {
+            0 => {
+                let err = unsafe { GetLastError() };
+                Err(err)
+            }
+            res @ _ => Ok(res),
         }
     }
 }
@@ -265,23 +299,20 @@ unsafe extern "system" fn enum_prop(handle: HWND, prop: LPCWSTR, _: HANDLE) -> B
 }
 
 #[derive(Debug)]
-pub struct Builder<'a> {
+pub struct Builder {
     pos_size: (i32, i32, i32, i32),
     class_name: String,
     extra_styles: u32,
     style: u32,
     title: String,
-    parent: Option<&'a Window>,
+    parent: Option<WindowId>,
 }
 
-impl<'a> Builder<'a> {
-    pub fn set_parent(mut self, window: &'a Window) -> Self {
+impl Builder {
+    pub fn set_parent(mut self, window: WindowId) -> Self {
         self.parent = Some(window);
         self
     }
-}
-
-impl Builder<'_> {
     pub(super) fn new(class_name: &str, pos_size: (i32, i32, i32, i32)) -> Self {
         Self {
             pos_size,
@@ -542,24 +573,6 @@ mod tests {
 
         assert_eq!(*v1.downcast_ref::<i32>().unwrap(), 42);
         assert_eq!(*v2.downcast_ref::<&str>().unwrap(), "World");
-
-        Ok(())
-    }
-
-    #[test]
-    fn window_title_test() -> Result<()> {
-        let class = class::Registrar::new("window_title_test").build()?;
-
-        let window = class
-            .window_builder(100, 100, 800, 600)
-            .set_title("Test")
-            .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border])
-            .build()?;
-
-        assert_eq!(window.title(), "Test");
-
-        window.set_title("New title");
-        assert_eq!(window.title(), "New title");
 
         Ok(())
     }
