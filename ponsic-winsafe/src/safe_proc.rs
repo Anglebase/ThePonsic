@@ -161,6 +161,11 @@ pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event
         WM_PAINT => Event::Paint {
             context: unsafe { Context::from_raw(hwnd) },
         },
+        _ if msg >= WM_USER => Event::UserDef {
+            msg: msg - WM_USER,
+            wparam,
+            lparam,
+        },
         _ => Event::Other {
             msg,
             wparam,

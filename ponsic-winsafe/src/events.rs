@@ -196,11 +196,16 @@ pub enum Event {
     Input {
         ch: u16,
     },
-    Paint{
+    Paint {
         context: Context,
     },
     Destroy,
     Create,
+    UserDef {
+        msg: u32,
+        wparam: usize,
+        lparam: isize,
+    },
     Other {
         msg: UINT,
         wparam: WPARAM,
