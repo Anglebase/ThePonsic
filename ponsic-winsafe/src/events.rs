@@ -1,6 +1,6 @@
 use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
 
-use crate::graphics::context::Context;
+use crate::graphics::Context;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum KeyCode {

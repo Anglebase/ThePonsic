@@ -1,4 +1,4 @@
-use crate::{events::*, graphics::context::Context, win::window::WindowHandle};
+use crate::{events::*, graphics::Context, win::window::WindowHandle};
 use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
 pub use winapi::shared::windef::HWND;
 use winapi::um::winuser::*;

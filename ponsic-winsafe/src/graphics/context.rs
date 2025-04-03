@@ -17,8 +17,8 @@ impl Context {
     }
 }
 
-impl Into<Context2D> for Context {
-    fn into(self) -> Context2D {
+impl Into<Context2D<'_>> for Context {
+    fn into(self) -> Context2D<'static> {
         Context2D::new(self)
     }
 }

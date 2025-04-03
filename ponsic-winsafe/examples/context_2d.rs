@@ -1,10 +1,12 @@
 use ponsic_winsafe::{
-    graphics::context_2d::{Context2D, Point, Rect},
+    graphics::context_2d::{Color, Context2D, JoinStyle, Point, Rect},
     wndproc, *,
 };
 
-fn paint(context: Context2D) {
+fn paint(mut context: Context2D<'_>) {
     context.clear();
+    context.set_line_width(10);
+    context.set_line_color(Color::from_rgb(255, 0, 0));
     context.line(Point::from_xy(10, 10), Point::from_xy(200, 200));
     let points = [
         Point::from_xy(10, 5),
@@ -21,6 +23,7 @@ fn paint(context: Context2D) {
     };
     let p1 = Point::from_xy(rect.left, rect.top);
     let p2 = Point::from_xy(rect.right, rect.bottom);
+    context.set_join_style(JoinStyle::Round);
     context.arc(rect, p1, p2);
     context.polyline(&rect.to_polyline());
 }
