@@ -1,13 +1,13 @@
+mod brush;
 mod color;
 mod pen;
-mod brush;
 mod types;
 use std::{fmt::Debug, ptr::null_mut};
 
 use super::context::Context;
+pub use brush::*;
 pub use color::*;
 pub use pen::*;
-pub use brush::*;
 pub use types::*;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -145,6 +145,42 @@ impl<'a> Context2D<'a> {
     pub unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
         unsafe {
             SelectObject(self.hdc, pen.handle() as _);
+        }
+    }
+}
+
+impl Context2D<'_> {
+    pub fn rectangle(&self, rect: Rect) {
+        unsafe {
+            Rectangle(self.hdc, rect.left, rect.top, rect.right, rect.bottom);
+        }
+    }
+
+    pub fn ellipse(&self, rect: Rect) {
+        unsafe {
+            Ellipse(self.hdc, rect.left, rect.top, rect.right, rect.bottom);
+        }
+    }
+
+    pub fn polygon(&self, points: &[Point]) {
+        unsafe {
+            Polygon(self.hdc, points.as_ptr() as _, points.len() as _);
+        }
+    }
+
+    pub fn pie(&self, rect: Rect, p1: Point, p2: Point) {
+        unsafe {
+            Pie(
+                self.hdc,
+                rect.left,
+                rect.top,
+                rect.right,
+                rect.bottom,
+                p1.x,
+                p1.y,
+                p2.x,
+                p2.y,
+            );
         }
     }
 }
