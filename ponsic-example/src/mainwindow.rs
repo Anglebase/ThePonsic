@@ -4,6 +4,7 @@ use ponsic::*;
 fn main_window_process(Events { event, .. }: Events) -> Option<isize> {
     match event {
         Event::Destroy => {
+            println!("MainWindow destroyed");
             App::should_exit(0);
             Some(0)
         }
@@ -12,7 +13,7 @@ fn main_window_process(Events { event, .. }: Events) -> Option<isize> {
 }
 
 lazy_static! {
-    pub static ref MAINWINDOW_BUIDER: Class = Registrar::new("MainWindow")
+    pub static ref MAINWINDOW_CLASS: Class = Registrar::new("MainWindow")
         .set_cursor(Cursor::Arrow)
         .set_process(wndproc!(main_window_process))
         .build()
