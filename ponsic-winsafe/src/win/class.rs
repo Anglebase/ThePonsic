@@ -113,6 +113,7 @@ impl PreDefineClass {
     }
 }
 
+/// 窗口类注册器
 #[derive(Debug)]
 pub struct Registrar {
     style: u32,
