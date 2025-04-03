@@ -23,6 +23,7 @@ impl SystemError {
     }
 }
 
+/// 检查当前上下文中的错误代码
 pub fn check_error() -> Result<(), SystemError> {
     let code = unsafe { GetLastError() };
     if code != 0 {
@@ -31,6 +32,7 @@ pub fn check_error() -> Result<(), SystemError> {
     Ok(())
 }
 
+/// 断言当前上下文中的没有发生错误
 pub fn assert_no_error() {
     check_error().unwrap();
 }
