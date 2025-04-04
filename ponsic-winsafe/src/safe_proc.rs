@@ -1,4 +1,4 @@
-use crate::{events::*, graphics::Context, win::window::WindowHandle};
+use crate::{The, WindowId, events::*, graphics::Context, win::window::WindowHandle};
 use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
 pub use winapi::shared::windef::HWND;
 use winapi::um::winuser::*;
@@ -286,6 +286,14 @@ pub struct Events {
     pub event: Event,
 }
 
+pub fn cast<T>(hwnd: WindowId) -> The<T> {
+    let hwnd = unsafe { hwnd.handle() } as HWND;
+    unsafe {
+        let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+        The::from_raw(ptr as _)
+    }
+}
+
 /// 生成窗口处理过程函数宏
 ///
 /// # Param
@@ -299,18 +307,18 @@ pub struct Events {
 macro_rules! wndproc {
     (() ; $($f:tt)+) => {
         {
-            extern "system" fn __inner_wndproc(hwnd: $crate::HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
+            extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
                 let __f = $($f)*;
                 let __result = __f(
                     $crate::Events {
-                        window: unsafe{ $crate::WindowHandle::from_raw(hwnd) },
-                        event: $crate::translate(hwnd, msg, wparam, lparam),
+                        window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
+                        event: $crate::translate(__hwnd, __msg, __wparam, __lparam),
                     }
                 );
                 if let Some(__result) = __result {
                     __result
                 } else {
-                    $crate::default_proc(hwnd, msg, wparam, lparam)
+                    $crate::default_proc(__hwnd, __msg, __wparam, __lparam)
                 }
             }
             unsafe { $crate::WndProc::from_raw(__inner_wndproc) }
@@ -318,18 +326,22 @@ macro_rules! wndproc {
     };
     ($t:ty ; $($f:tt)+) => {
         {
-            extern "system" fn __inner_wndproc(hwnd: $crate::HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
+            extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
+                if __msg == 0x1 {
+                    unsafe { $crate::cast::<$t>($crate::WindowId::from_raw(__hwnd as _)).free() };
+                }
                 let __f = $($f)*;
                 let __result = __f(
                     $crate::Events {
-                        window: unsafe{ $crate::WindowHandle::from_raw(hwnd) },
-                        event: $crate::translate(hwnd, msg, wparam, lparam),
-                    }
+                        window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
+                        event: $crate::translate(__hwnd, __msg, __wparam, __lparam),
+                    },
+                    $crate::cast::<$t>(unsafe { $crate::WindowId::from_raw(__hwnd as _) }),
                 );
                 if let Some(__result) = __result {
                     __result
                 } else {
-                    $crate::default_proc(hwnd, msg, wparam, lparam)
+                    $crate::default_proc(__hwnd, __msg, __wparam, __lparam)
                 }
             }
             unsafe { $crate::WndProc::from_raw(__inner_wndproc) }

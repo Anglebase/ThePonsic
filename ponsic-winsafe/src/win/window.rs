@@ -8,7 +8,7 @@ use winapi::um::libloaderapi::GetModuleHandleW;
 use winapi::um::winnt::{HANDLE, LPCWSTR};
 use winapi::um::winuser::*;
 
-use crate::{check_error, SystemError};
+use crate::{SystemError, check_error};
 
 /// 参考 [WIN32 窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/window-styles)
 /// 及 [WIN32 扩展窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/extended-window-styles)
@@ -239,6 +239,14 @@ pub trait WindowManager {
             );
         }
     }
+
+    fn bind<T>(&self, the: T) {
+        let the = Box::new(the);
+        let ptr = Box::into_raw(the);
+        unsafe {
+            SetWindowLongPtrW(self.get_handle() as HWND, GWLP_USERDATA, ptr as isize);
+        }
+    }
 }
 
 impl Window {
@@ -254,11 +262,14 @@ impl Window {
     ///
     /// # Note
     /// 此函数的调用是异步的，它不等待回调函数对消息进行处理，直接返回，此函数不应传递引用
-    pub unsafe fn post(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> Result<i32, SystemError> {
+    pub unsafe fn post(
+        window: WindowId,
+        msg: u32,
+        wparam: usize,
+        lparam: isize,
+    ) -> Result<i32, SystemError> {
         match unsafe { PostMessageW(window.handle as _, msg, wparam, lparam) } {
-            0 => {
-                Err(check_error().unwrap_err())
-            }
+            0 => Err(check_error().unwrap_err()),
             res @ _ => Ok(res),
         }
     }
@@ -588,5 +599,15 @@ mod tests {
 impl WindowHandle {
     pub unsafe fn from_raw(handle: HWND) -> Self {
         WindowHandle { handle }
+    }
+}
+
+impl WindowId {
+    pub unsafe fn handle(&self) -> usize {
+        self.handle
+    }
+
+    pub unsafe fn from_raw(handle: usize) -> Self {
+        WindowId { handle }
     }
 }
