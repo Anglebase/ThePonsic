@@ -3,7 +3,7 @@ use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 fn process(Events { event, .. }: Events) -> Option<isize> {
     match event {
         Event::Create => {
-            println!("Created");
+            // println!("Created");
             Some(0)
         }
         Event::Destroy => {
@@ -11,7 +11,10 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
             Some(0)
         }
         Event::Other { msg, .. } => {
-            println!("{}", translate_msg(msg));
+            let s = translate_msg(msg);
+            if s == "UNDEFINED" {
+                println!("{}", msg);
+            }
             None
         }
         Event::SizeRange {
@@ -23,8 +26,8 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
             *min_track_height = 480;
             Some(0)
         }
-        e @ _ => {
-            println!("{:?}", e);
+        _ => {
+            // println!("{:?}", e);
             None
         }
     }

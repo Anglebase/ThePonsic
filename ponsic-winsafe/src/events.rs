@@ -1,4 +1,4 @@
-use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
+use winapi::{shared::minwindef::{LPARAM, UINT, WPARAM}, um::winuser::*};
 
 use crate::graphics::Context;
 
@@ -191,6 +191,34 @@ pub struct RefRect<'a> {
     pub bottom: &'a mut i32,
 }
 
+#[repr(isize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub enum CursorAt {
+    Border = HTBORDER,
+    Bottom = HTBOTTOM,
+    BottomLeft = HTBOTTOMLEFT,
+    BottomRight = HTBOTTOMRIGHT,
+    Caption = HTCAPTION,
+    Client = HTCLIENT,
+    Close = HTCLOSE,
+    Error = HTERROR,
+    Help = HTHELP,
+    HScroll = HTHSCROLL,
+    Left = HTLEFT,
+    Menu = HTMENU,
+    MaxButton = HTMAXBUTTON,
+    MinButton = HTMINBUTTON,
+    NoWhere = HTNOWHERE,
+    Right = HTRIGHT,
+    Size = HTSIZE,
+    Sysmenu = HTSYSMENU,
+    Top = HTTOP,
+    TopLeft = HTTOPLEFT,
+    TopRight = HTTOPRIGHT,
+    Transparent = HTTRANSPARENT,
+    VScroll = HTVSCROLL,
+}
+
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum Event<'a> {
     Key {
@@ -250,4 +278,17 @@ pub enum Event<'a> {
         ref_rect: RefRect<'a>,
         type_: SizingSide,
     },
+    NoClient(NoClient),
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub enum NoClient {
+    /// 回调函数处理此消息应该返回 None，以确保执行默认行为
+    HitTest { x: i32, y: i32 },
+    Mouse {
+        button: Button,
+        pos: (i16, i16),
+        status: ButtonStatus,
+        at: CursorAt,
+    }
 }

@@ -1,6 +1,9 @@
 use crate::{The, WindowId, events::*, graphics::Context, win::window::WindowHandle};
-use winapi::shared::{minwindef::{LPARAM, UINT, WPARAM}, windef::RECT};
 pub use winapi::shared::windef::HWND;
+use winapi::shared::{
+    minwindef::{LPARAM, UINT, WPARAM},
+    windef::{POINTS, RECT},
+};
 use winapi::um::winuser::*;
 
 macro_rules! w_param_to_mod_key {
@@ -156,6 +159,11 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
         WM_LBUTTONDOWN | WM_LBUTTONUP | WM_LBUTTONDBLCLK | WM_MBUTTONDOWN | WM_MBUTTONUP
         | WM_MBUTTONDBLCLK | WM_RBUTTONDOWN | WM_RBUTTONUP | WM_RBUTTONDBLCLK | WM_XBUTTONDOWN
         | WM_XBUTTONUP | WM_XBUTTONDBLCLK => translate_mouse_button(msg, wparam, lparam),
+        WM_NCLBUTTONDOWN | WM_NCLBUTTONUP | WM_NCLBUTTONDBLCLK | WM_NCMBUTTONDOWN
+        | WM_NCMBUTTONUP | WM_NCMBUTTONDBLCLK | WM_NCRBUTTONDOWN | WM_NCRBUTTONUP
+        | WM_NCRBUTTONDBLCLK | WM_NCXBUTTONDOWN | WM_NCXBUTTONUP | WM_NCXBUTTONDBLCLK => {
+            translate_nc_mouse_button(msg, wparam, lparam)
+        }
         WM_KEYDOWN | WM_KEYUP => translate_key_event(msg, wparam, lparam),
         WM_MOUSEMOVE => translate_mouse_move_event(wparam, lparam),
         WM_MOUSEWHEEL => translate_mouse_wheel_event(wparam, lparam),
@@ -191,6 +199,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
                 type_: wparam_to_size_side(wparam),
             }
         }
+        WM_NCHITTEST => translate_nc_hit_test(lparam),
         _ if msg >= WM_USER => Event::UserDef {
             msg: msg - WM_USER,
             wparam,
@@ -202,6 +211,80 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
             lparam,
         },
     }
+}
+
+#[allow(unused)]
+const fn translate_nc_mouse_button(msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event<'static> {
+    // let (x, y) = lparam_to_points(lparam);
+    let (x, y) = (0, 0);
+    let at = match (wparam & 0xffff) as isize {
+        HTBORDER => CursorAt::Border,
+        HTBOTTOM => CursorAt::Bottom,
+        HTBOTTOMLEFT => CursorAt::BottomLeft,
+        HTBOTTOMRIGHT => CursorAt::BottomRight,
+        HTCAPTION => CursorAt::Caption,
+        HTCLIENT => CursorAt::Client,
+        HTCLOSE => CursorAt::Close,
+        HTERROR => CursorAt::Error,
+        HTHELP => CursorAt::Help,
+        HTHSCROLL => CursorAt::HScroll,
+        HTLEFT => CursorAt::Left,
+        HTMENU => CursorAt::Menu,
+        HTMAXBUTTON => CursorAt::MaxButton,
+        HTMINBUTTON => CursorAt::MinButton,
+        HTNOWHERE => CursorAt::NoWhere,
+        HTRIGHT => CursorAt::Right,
+        HTSIZE => CursorAt::Size,
+        HTSYSMENU => CursorAt::Sysmenu,
+        HTTOP => CursorAt::Top,
+        HTTOPLEFT => CursorAt::TopLeft,
+        HTTOPRIGHT => CursorAt::TopRight,
+        HTTRANSPARENT => CursorAt::Transparent,
+        HTVSCROLL => CursorAt::VScroll,
+        _ => unreachable!(),
+    };
+
+    let button = match msg {
+        WM_NCLBUTTONDOWN | WM_NCLBUTTONUP | WM_NCLBUTTONDBLCLK => Button::Left,
+        WM_NCMBUTTONDOWN | WM_NCMBUTTONUP | WM_NCMBUTTONDBLCLK => Button::Middle,
+        WM_NCRBUTTONDOWN | WM_NCRBUTTONUP | WM_NCRBUTTONDBLCLK => Button::Right,
+        WM_NCXBUTTONDOWN | WM_NCXBUTTONUP | WM_NCXBUTTONDBLCLK => {
+            match ((wparam >> 16) & 0xffff) as u16 {
+                XBUTTON1 => Button::X1,
+                XBUTTON2 => Button::X2,
+                _ => unreachable!(),
+            }
+        }
+        _ => unreachable!(),
+    };
+    let status = match msg {
+        WM_NCLBUTTONDOWN | WM_NCMBUTTONDOWN | WM_NCRBUTTONDOWN | WM_NCXBUTTONDOWN => {
+            ButtonStatus::Down
+        }
+        WM_NCLBUTTONUP | WM_NCMBUTTONUP | WM_NCRBUTTONUP | WM_NCXBUTTONUP => ButtonStatus::Up,
+        WM_NCLBUTTONDBLCLK | WM_NCMBUTTONDBLCLK | WM_NCRBUTTONDBLCLK | WM_NCXBUTTONDBLCLK => {
+            ButtonStatus::DoubleClick
+        }
+        _ => unreachable!(),
+    };
+    Event::NoClient(NoClient::Mouse {
+        button,
+        pos: (x, y),
+        status,
+        at,
+    })
+}
+
+#[allow(unused)]
+const fn lparam_to_points(lparam: LPARAM) -> (i16, i16) {
+    let p = unsafe { (lparam as *mut POINTS).as_ref().unwrap() };
+    (p.x, p.y)
+}
+
+const fn translate_nc_hit_test(lparam: LPARAM) -> Event<'static> {
+    let x = (lparam & 0xffff) as i32;
+    let y = (lparam >> 16) as i32;
+    Event::NoClient(NoClient::HitTest { x, y })
 }
 
 const fn wparam_to_size_side(wparam: WPARAM) -> SizingSide {
