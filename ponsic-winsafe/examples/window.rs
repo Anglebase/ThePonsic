@@ -10,7 +10,10 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
             App::should_exit(0);
             Some(0)
         }
-        // Event::Other { .. } => None,
+        Event::Other { msg, .. } => {
+            println!("{}", translate_msg(msg));
+            None
+        }
         e @ _ => {
             println!("{:?}", e);
             None

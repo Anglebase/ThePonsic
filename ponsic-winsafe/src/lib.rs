@@ -10,4 +10,5 @@ pub use win::{
     class::*,
     window::*,
     error::*,
+    gen_by_py::translate_msg,
 };

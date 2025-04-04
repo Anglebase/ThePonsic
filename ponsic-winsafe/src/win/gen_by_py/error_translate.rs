@@ -1,4 +1,5 @@
-pub const fn get_error_msg(code: i32) -> &'static str {
+// 此文件是由 e:\Demo\ThePonsic\utils\gen_error_code.py 生成的
+pub const fn translate_error(code: u32) -> &'static str {
     match code {
         0 => "操作已成功完成。",
         1 => "函数不正确。",

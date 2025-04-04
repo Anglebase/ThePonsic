@@ -4,6 +4,7 @@ pub mod app;
 pub mod class;
 pub mod window;
 pub mod error;
+pub mod gen_by_py;
 
 pub type Result<T> = std::result::Result<T, SystemError>;
 
