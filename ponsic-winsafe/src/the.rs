@@ -37,12 +37,14 @@ impl<T> The<T> {
         }
     }
 
+    /// 由`The<T>`释放内存
     pub unsafe fn free(mut self) {
         if let Some(the) = self.the.take() {
             let _ = the;
         }
     }
 
+    /// 判断`The<T>`是否包含值
     pub fn has_value(&self) -> bool {
         self.the.is_some()
     }

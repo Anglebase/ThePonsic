@@ -307,7 +307,9 @@ pub fn bind_when_create(hwnd: HWND, lparam: isize) {
 /// 生成窗口处理过程函数宏
 ///
 /// # Param
-/// 传入的函数应符合 `impl Fn(Events) -> Option<isize>` 且无外部捕获的非全局变量
+/// 它的参数应是`<type>;<fn>`的格式，`<type>`指示窗口关联数据的类型，若无关联数据，则以`()`占位
+/// 传入的函数应符合 `impl Fn(Events) -> Option<isize>` (若无关联数据)
+/// 或 `impl Fn(Events,The<T>) -> Option<isize>`(若有关联数据) 并且无外部捕获的非全局变量
 /// + 若该函数返回 `None` 则将后续处理交由默认处理过程函数
 /// + 若该函数返回 `Some(isize)` 则直接将内含值作为过程回调函数的返回值
 ///
