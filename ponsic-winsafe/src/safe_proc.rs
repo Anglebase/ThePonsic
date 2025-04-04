@@ -294,6 +294,16 @@ pub fn cast<T>(hwnd: WindowId) -> The<T> {
     }
 }
 
+pub fn bind_when_create(hwnd: HWND, lparam: isize) {
+    let lparam = lparam as *const CREATESTRUCTW;
+    unsafe {
+        if let Some(lparam) = lparam.as_ref() {
+            let ptr = lparam.lpCreateParams;
+            SetWindowLongPtrW(hwnd, GWLP_USERDATA, ptr as _);
+        }
+    }
+}
+
 /// 生成窗口处理过程函数宏
 ///
 /// # Param
@@ -327,8 +337,11 @@ macro_rules! wndproc {
     ($t:ty ; $($f:tt)+) => {
         {
             extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
-                if __msg == 0x1 {
+                if __msg == 0x2 /* WM_DESTROY */ {
                     unsafe { $crate::cast::<$t>($crate::WindowId::from_raw(__hwnd as _)).free() };
+                }
+                if __msg == 0x1 /* WM_CREATE */ {
+                    $crate::bind_when_create(__hwnd, __lparam);
                 }
                 let __f = $($f)*;
                 let __result = __f(

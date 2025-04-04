@@ -1,29 +1,26 @@
 use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
-fn process(Events { event, .. }: Events, the: The<u32>) -> Option<isize> {
-    match the.as_ref() {
-        Some(r) => {
-            println!("{}", *r);
-        }
-        _ => {}
-    }
+fn process(Events { event, .. }: Events, mut the: The<u32>) -> Option<isize> {
     match event {
         Event::Create => {
             println!("Created");
+            Some(0)
+        }
+        Event::Mouse { button, status, .. } => {
+            if (button, status) == (Button::Left, ButtonStatus::Down) {
+                println!("Clicked!");
+                if let Some(mut r) = the.as_mut() {
+                    *r += 1;
+                    println!("The value is now {}", *r);
+                }
+            }
             Some(0)
         }
         Event::Destroy => {
             App::should_exit(0);
             Some(0)
         }
-        Event::Other { msg, .. } => {
-            println!("{}", translate_msg(msg));
-            None
-        }
-        e @ _ => {
-            println!("{:?}", e);
-            None
-        }
+        _ => None,
     }
 }
 
@@ -38,9 +35,9 @@ fn main() {
         .window_builder(Rect::from_ps(100, 100, 800, 600))
         .set_title("MyApp")
         .set_style(&[WindowStyle::OverlappedWindow])
+        .bind(10u32)
         .build()
         .unwrap();
-    window.bind(10u32);
     window.show();
     while App::handle_event(true).unwrap_or(true) {}
 }

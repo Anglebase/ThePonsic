@@ -330,6 +330,7 @@ pub struct Builder {
     style: u32,
     title: String,
     parent: Option<WindowId>,
+    ptr: usize,
 }
 
 impl Builder {
@@ -345,6 +346,7 @@ impl Builder {
             style: 0,
             title: "Window".into(),
             parent: None,
+            ptr: 0,
         }
     }
 
@@ -523,6 +525,12 @@ impl Builder {
         self
     }
 
+    pub fn bind<T>(mut self, the: T) -> Self {
+        let the = Box::new(the);
+        self.ptr = Box::into_raw(the) as _;
+        self
+    }
+
     pub fn build(self) -> super::Result<Window> {
         let class_name: Vec<u16> = self.class_name.encode_utf16().chain(Some(0)).collect();
         let title: Vec<u16> = self.title.encode_utf16().chain(Some(0)).collect();
@@ -543,7 +551,7 @@ impl Builder {
                 },
                 null_mut(),
                 GetModuleHandleW(null()),
-                null_mut(),
+                self.ptr as _,
             );
             if handle.is_null() {
                 check_error()?;
