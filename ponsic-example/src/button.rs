@@ -40,7 +40,7 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
 lazy_static! {
     pub static ref BUTTON_CLASS: Class = Registrar::new("Button")
         .set_cursor(Cursor::Arrow)
-        .set_process(wndproc!(button_process))
+        .set_process(wndproc!(();button_process))
         .build()
         .unwrap();
 }

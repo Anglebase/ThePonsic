@@ -32,7 +32,7 @@ mod tests {
     fn window_work_test() -> Result<()> {
         let class = class::Registrar::new("TestWindow1")
             .set_cursor(Cursor::Arrow)
-            .set_process(wndproc!(proc))
+            .set_process(wndproc!(();proc))
             .build()?;
 
         let window = class
@@ -49,7 +49,7 @@ mod tests {
     fn demo_work_test() -> Result<()> {
         let class = class::Registrar::new("TestWindow2")
             .set_cursor(Cursor::Arrow)
-            .set_process(wndproc!(proc))
+            .set_process(wndproc!(();proc))
             .build()?;
 
         let window = class

@@ -23,7 +23,7 @@ fn main_window_process(Events { event, .. }: Events) -> Option<isize> {
 lazy_static! {
     pub static ref MAINWINDOW_CLASS: Class = Registrar::new("MainWindow")
         .set_cursor(Cursor::Arrow)
-        .set_process(wndproc!(main_window_process))
+        .set_process(wndproc!(();main_window_process))
         .build()
         .unwrap();
 }

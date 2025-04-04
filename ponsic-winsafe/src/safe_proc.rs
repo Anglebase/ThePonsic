@@ -297,7 +297,26 @@ pub struct Events {
 /// 它生成的值是 `WndProc` 对象，可直接作为`&Class.set_process()`函数的参数
 #[macro_export]
 macro_rules! wndproc {
-    ($($f:tt)*) => {
+    (() ; $($f:tt)+) => {
+        {
+            extern "system" fn __inner_wndproc(hwnd: $crate::HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
+                let __f = $($f)*;
+                let __result = __f(
+                    $crate::Events {
+                        window: unsafe{ $crate::WindowHandle::from_raw(hwnd) },
+                        event: $crate::translate(hwnd, msg, wparam, lparam),
+                    }
+                );
+                if let Some(__result) = __result {
+                    __result
+                } else {
+                    $crate::default_proc(hwnd, msg, wparam, lparam)
+                }
+            }
+            unsafe { $crate::WndProc::from_raw(__inner_wndproc) }
+        }
+    };
+    ($t:ty ; $($f:tt)+) => {
         {
             extern "system" fn __inner_wndproc(hwnd: $crate::HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
                 let __f = $($f)*;

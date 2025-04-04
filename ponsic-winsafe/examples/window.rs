@@ -2,11 +2,15 @@ use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
 fn process(Events { event, .. }: Events) -> Option<isize> {
     match event {
+        Event::Create => {
+            println!("Created");
+            Some(0)
+        }
         Event::Destroy => {
             App::should_exit(0);
             Some(0)
         }
-        Event::Other { .. } => None,
+        // Event::Other { .. } => None,
         e @ _ => {
             println!("{:?}", e);
             None
@@ -17,7 +21,7 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
 fn main() {
     let class = Registrar::new("MyApp")
         .set_cursor(Cursor::Arrow)
-        .set_process(wndproc!(process))
+        .set_process(wndproc!(();process))
         .build()
         .unwrap();
 

@@ -73,7 +73,7 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
 fn main() {
     let class = Registrar::new("MyApp")
         .set_cursor(Cursor::Arrow)
-        .set_process(wndproc!(process))
+        .set_process(wndproc!(();process))
         .build()
         .unwrap();
 
