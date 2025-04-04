@@ -274,6 +274,7 @@ impl Window {
         }
     }
 
+    /// 用户自定义消息的起始值
     pub const USER_DEF_BASE: u32 = WM_USER;
     pub const APP_DEF_BASE: u32 = WM_APP;
 }
@@ -322,6 +323,7 @@ unsafe extern "system" fn enum_prop(handle: HWND, prop: LPCWSTR, _: HANDLE) -> B
     }
 }
 
+/// 窗口构建器
 #[derive(Debug)]
 pub struct Builder {
     pos_size: (i32, i32, u32, u32),
@@ -334,10 +336,6 @@ pub struct Builder {
 }
 
 impl Builder {
-    pub fn set_parent(mut self, window: WindowId) -> Self {
-        self.parent = Some(window);
-        self
-    }
     pub(super) fn new(class_name: &str, pos_size: (i32, i32, u32, u32)) -> Self {
         Self {
             pos_size,
@@ -350,6 +348,15 @@ impl Builder {
         }
     }
 
+    /// 设置窗口的父窗口
+    pub fn set_parent(mut self, window: WindowId) -> Self {
+        self.parent = Some(window);
+        self
+    }
+
+    /// 设置窗口的样式
+    /// 
+    /// 参考 [WindowStyle]
     pub fn set_style(mut self, style: &[WindowStyle]) -> Self {
         for &style in style {
             match style {
@@ -520,17 +527,20 @@ impl Builder {
         self
     }
 
+    /// 设置窗口标题
     pub fn set_title(mut self, title: &str) -> Self {
         self.title = title.into();
         self
     }
 
+    /// 绑定窗口的关联数据
     pub fn bind<T>(mut self, the: T) -> Self {
         let the = Box::new(the);
         self.ptr = Box::into_raw(the) as _;
         self
     }
 
+    /// 创建窗口
     pub fn build(self) -> super::Result<Window> {
         let class_name: Vec<u16> = self.class_name.encode_utf16().chain(Some(0)).collect();
         let title: Vec<u16> = self.title.encode_utf16().chain(Some(0)).collect();

@@ -2,6 +2,7 @@ use winapi::shared::windef::HWND;
 
 use super::context_2d::Context2D;
 
+/// 窗口上下文
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct Context {
     hwnd: HWND,

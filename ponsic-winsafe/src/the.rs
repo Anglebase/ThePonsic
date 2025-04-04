@@ -3,7 +3,9 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-/// `The<T>`是与`Box<T>`类似的智能指针，但它不会自动参与内存的申请与释放，仅仅是内存数据的临时持有者
+/// 内存访问器
+/// 
+/// 此结构体是类似于`Box<T>`的智能指针，但是该指针不持有所有权，不参与内存申请与释放的管理，仅用于访问既分配的内存
 pub struct The<T> {
     the: Option<Box<T>>,
 }
@@ -37,7 +39,11 @@ impl<T> The<T> {
         }
     }
 
-    /// 由`The<T>`释放内存
+    /// 由`The<T>`释放既分配内存
+    /// 
+    /// # Safety
+    /// 
+    /// 此函数会释放`The<T>`所包含的值，因此调用者必须保证`The<T>`所包含的值没有被其他地方使用，否则可能会造成悬垂引用
     pub unsafe fn free(mut self) {
         if let Some(the) = self.the.take() {
             let _ = the;
@@ -49,6 +55,7 @@ impl<T> The<T> {
         self.the.is_some()
     }
 
+    /// 获取`The<T>`的不可变引用访问器
     pub fn as_ref(&self) -> Option<TheRef<T>> {
         match self.the {
             Some(_) => Some(TheRef { the: self }),
@@ -56,6 +63,7 @@ impl<T> The<T> {
         }
     }
 
+    /// 获取`The<T>`的可变引用访问器
     pub fn as_mut(&mut self) -> Option<TheMut<T>> {
         match self.the {
             Some(_) => Some(TheMut { the: self }),
@@ -72,6 +80,7 @@ impl<T> Drop for The<T> {
     }
 }
 
+/// 参考 `The<T>`
 pub struct TheRef<'a, T> {
     the: &'a The<T>,
 }
@@ -84,6 +93,7 @@ impl<'a, T> Deref for TheRef<'a, T> {
     }
 }
 
+/// 参考 `The<T>`
 pub struct TheMut<'a, T> {
     the: &'a mut The<T>,
 }

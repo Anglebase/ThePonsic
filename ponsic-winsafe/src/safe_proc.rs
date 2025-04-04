@@ -147,6 +147,10 @@ fn vk_to_key(vk: i32) -> KeyCode {
     }
 }
 
+/// 翻译窗口事件
+/// 
+/// # Note
+/// 此函数由宏`wndproc!(...)`调用，不应直接调用
 pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
     match msg {
         WM_LBUTTONDOWN | WM_LBUTTONUP | WM_LBUTTONDBLCLK | WM_MBUTTONDOWN | WM_MBUTTONUP
@@ -242,16 +246,19 @@ fn translate_mouse_wheel_event(w_param: WPARAM, l_param: LPARAM) -> Event {
     }
 }
 
+/// 判断指定字节是否为UTF-16代理对的高 16 位
 #[inline]
 pub const fn is_high_surrogate(wch: u16) -> bool {
     wch >= 0xd800 && wch <= 0xdbff
 }
 
+/// 判断指定字节是否为UTF-16代理对的低 16 位
 #[inline]
 pub const fn is_low_surrogate(wch: u16) -> bool {
     wch >= 0xdc00 && wch <= 0xdfff
 }
 
+/// 将UTF-16代理对转换为UTF-32
 #[inline]
 pub const fn utf16_to_utf32(high: u16, low: u16) -> u32 {
     assert!(is_high_surrogate(high));
@@ -263,10 +270,18 @@ fn translate_text_input_event(w_param: WPARAM) -> Event {
     Event::Input { ch: w_param as _ }
 }
 
+/// 窗口默认行为函数
+/// 
+/// # Note
+/// 此函数由宏`wndproc!(...)`调用，不应直接调用
 pub fn default_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
     return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
 }
 
+/// 窗口过程
+/// 
+/// # Note
+/// 此结构体应由宏`wndproc!(...)`创建
 pub struct WndProc {
     proc: extern "system" fn(HWND, u32, usize, isize) -> isize,
 }
@@ -286,6 +301,11 @@ pub struct Events {
     pub event: Event,
 }
 
+/// 获取窗口所关联的数据
+/// 
+/// # Note
+/// 
+/// 不建议直接使用此方法
 pub fn cast<T>(hwnd: WindowId) -> The<T> {
     let hwnd = unsafe { hwnd.handle() } as HWND;
     unsafe {
@@ -294,6 +314,7 @@ pub fn cast<T>(hwnd: WindowId) -> The<T> {
     }
 }
 
+/// 此函数在宏 `wndproc!(...)` 中使用，不应直接调用
 pub fn bind_when_create(hwnd: HWND, lparam: isize) {
     let lparam = lparam as *const CREATESTRUCTW;
     unsafe {
