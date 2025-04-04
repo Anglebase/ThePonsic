@@ -16,6 +16,7 @@ use winapi::{
     um::{wingdi::*, winuser::*},
 };
 
+/// 窗口 2D 绘图上下文
 pub struct Context2D<'a> {
     hwnd: HWND,
     hdc: HDC,
