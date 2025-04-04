@@ -14,6 +14,15 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
             println!("{}", translate_msg(msg));
             None
         }
+        Event::SizeRange {
+            min_track_width,
+            min_track_height,
+            ..
+        } => {
+            *min_track_width = 640;
+            *min_track_height = 480;
+            Some(0)
+        }
         e @ _ => {
             println!("{:?}", e);
             None

@@ -1,5 +1,5 @@
 use crate::{The, WindowId, events::*, graphics::Context, win::window::WindowHandle};
-use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
+use winapi::shared::{minwindef::{LPARAM, UINT, WPARAM}, windef::RECT};
 pub use winapi::shared::windef::HWND;
 use winapi::um::winuser::*;
 
@@ -23,7 +23,7 @@ const fn l_param_to_pos(l_param: LPARAM) -> (i32, i32) {
     ((l_param & 0xffff) as i32, ((l_param >> 16) & 0xffff) as i32)
 }
 
-fn vk_to_key(vk: i32) -> KeyCode {
+const fn vk_to_key(vk: i32) -> KeyCode {
     match vk {
         0x30 => KeyCode::Num0,
         0x31 => KeyCode::Num1,
@@ -148,10 +148,10 @@ fn vk_to_key(vk: i32) -> KeyCode {
 }
 
 /// 翻译窗口事件
-/// 
+///
 /// # Note
 /// 此函数由宏`wndproc!(...)`调用，不应直接调用
-pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
+pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event {
     match msg {
         WM_LBUTTONDOWN | WM_LBUTTONUP | WM_LBUTTONDBLCLK | WM_MBUTTONDOWN | WM_MBUTTONUP
         | WM_MBUTTONDBLCLK | WM_RBUTTONDOWN | WM_RBUTTONUP | WM_RBUTTONDBLCLK | WM_XBUTTONDOWN
@@ -163,8 +163,34 @@ pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event
         WM_DESTROY => Event::Destroy,
         WM_CREATE => Event::Create,
         WM_PAINT => Event::Paint {
-            context: unsafe { Context::from_raw(hwnd) },
+            context: unsafe { Context::from_raw(*hwnd) },
         },
+        WM_GETMINMAXINFO => {
+            let lparam = unsafe { (lparam as *mut MINMAXINFO).as_mut().unwrap() };
+            Event::SizeRange {
+                max_width: &mut lparam.ptMaxSize.x,
+                max_height: &mut lparam.ptMaxSize.y,
+                max_left: &mut lparam.ptMaxPosition.x,
+                max_top: &mut lparam.ptMaxPosition.y,
+                min_track_width: &mut lparam.ptMinTrackSize.x,
+                min_track_height: &mut lparam.ptMinTrackSize.y,
+                max_track_width: &mut lparam.ptMaxTrackSize.x,
+                max_track_height: &mut lparam.ptMaxTrackSize.y,
+            }
+        }
+        WM_SIZE => translate_window_size(wparam, lparam),
+        WM_SIZING => {
+            let lparam = unsafe { (lparam as *mut RECT).as_mut().unwrap() };
+            Event::SizeChanging {
+                ref_rect: RefRect {
+                    left: &mut lparam.left,
+                    top: &mut lparam.top,
+                    right: &mut lparam.right,
+                    bottom: &mut lparam.bottom,
+                },
+                type_: wparam_to_size_side(wparam),
+            }
+        }
         _ if msg >= WM_USER => Event::UserDef {
             msg: msg - WM_USER,
             wparam,
@@ -178,7 +204,44 @@ pub fn translate(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event
     }
 }
 
-fn translate_mouse_button(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event {
+const fn wparam_to_size_side(wparam: WPARAM) -> SizingSide {
+    match wparam {
+        1 => SizingSide::Left,
+        3 => SizingSide::Top,
+        2 => SizingSide::Right,
+        6 => SizingSide::Bottom,
+        4 => SizingSide::TopLeft,
+        5 => SizingSide::TopRight,
+        7 => SizingSide::BottomLeft,
+        8 => SizingSide::BottomRight,
+        _ => unreachable!(),
+    }
+}
+
+const fn l_param_to_size(l_param: LPARAM) -> (u32, u32) {
+    let width = (l_param >> 16) as u32;
+    let height = (l_param & 0xffff) as u32;
+    (width, height)
+}
+
+const fn translate_window_size(w_param: WPARAM, l_param: LPARAM) -> Event<'static> {
+    let (width, height) = l_param_to_size(l_param);
+    let type_ = match w_param {
+        SIZE_MAXHIDE => SizeChangeType::MaxHide,
+        SIZE_MAXIMIZED => SizeChangeType::Maximize,
+        SIZE_MAXSHOW => SizeChangeType::MaxShow,
+        SIZE_MINIMIZED => SizeChangeType::Minimize,
+        SIZE_RESTORED => SizeChangeType::Restore,
+        _ => unreachable!(),
+    };
+    Event::SizeChanged {
+        width,
+        height,
+        type_,
+    }
+}
+
+const fn translate_mouse_button(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event<'static> {
     let button = match msg {
         WM_LBUTTONDOWN | WM_LBUTTONUP | WM_LBUTTONDBLCLK => Button::Left,
         WM_MBUTTONDOWN | WM_MBUTTONUP | WM_MBUTTONDBLCLK => Button::Middle,
@@ -210,7 +273,7 @@ fn translate_mouse_button(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event 
     }
 }
 
-fn translate_key_event(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event {
+const fn translate_key_event(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event<'static> {
     let status = if msg == WM_KEYDOWN {
         KeyStatus::Down
     } else {
@@ -225,13 +288,13 @@ fn translate_key_event(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event {
     }
 }
 
-fn translate_mouse_move_event(w_param: WPARAM, l_param: LPARAM) -> Event {
+const fn translate_mouse_move_event(w_param: WPARAM, l_param: LPARAM) -> Event<'static> {
     let pos = l_param_to_pos(l_param);
     let modifier = w_param_to_mod_key!(w_param);
     Event::Move { pos, modifier }
 }
 
-fn translate_mouse_wheel_event(w_param: WPARAM, l_param: LPARAM) -> Event {
+const fn translate_mouse_wheel_event(w_param: WPARAM, l_param: LPARAM) -> Event<'static> {
     let pos = l_param_to_pos(l_param);
     let modifier = w_param_to_mod_key!(w_param & 0xffff);
     let wheel = if ((w_param >> 16) & 0xffff) as i16 > 0 {
@@ -266,12 +329,12 @@ pub const fn utf16_to_utf32(high: u16, low: u16) -> u32 {
     0x10000u32 + ((high - 0xd800) * 0x400) as u32 + (low - 0xdc00) as u32
 }
 
-fn translate_text_input_event(w_param: WPARAM) -> Event {
+const fn translate_text_input_event(w_param: WPARAM) -> Event<'static> {
     Event::Input { ch: w_param as _ }
 }
 
 /// 窗口默认行为函数
-/// 
+///
 /// # Note
 /// 此函数由宏`wndproc!(...)`调用，不应直接调用
 pub fn default_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
@@ -279,7 +342,7 @@ pub fn default_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: isize) -> isize
 }
 
 /// 窗口过程
-/// 
+///
 /// # Note
 /// 此结构体应由宏`wndproc!(...)`创建
 pub struct WndProc {
@@ -296,15 +359,15 @@ impl WndProc {
     }
 }
 
-pub struct Events {
+pub struct Events<'a> {
     pub window: WindowHandle,
-    pub event: Event,
+    pub event: Event<'a>,
 }
 
 /// 获取窗口所关联的数据
-/// 
+///
 /// # Note
-/// 
+///
 /// 不建议直接使用此方法
 pub fn cast<T>(hwnd: WindowId) -> The<T> {
     let hwnd = unsafe { hwnd.handle() } as HWND;
@@ -345,7 +408,7 @@ macro_rules! wndproc {
                 let __result = __f(
                     $crate::Events {
                         window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
-                        event: $crate::translate(__hwnd, __msg, __wparam, __lparam),
+                        event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     }
                 );
                 if let Some(__result) = __result {
@@ -370,7 +433,7 @@ macro_rules! wndproc {
                 let __result = __f(
                     $crate::Events {
                         window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
-                        event: $crate::translate(__hwnd, __msg, __wparam, __lparam),
+                        event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     },
                     $crate::cast::<$t>(unsafe { $crate::WindowId::from_raw(__hwnd as _) }),
                 );

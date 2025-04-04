@@ -141,7 +141,7 @@ pub enum ModifierKey {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
-pub enum WindowSize {
+pub enum SizeChangeType {
     Resize,
     Minimize,
     Maximize,
@@ -172,7 +172,27 @@ pub enum KeyStatus {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
-pub enum Event {
+pub enum SizingSide {
+    Left,
+    Right,
+    Top,
+    Bottom,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub struct RefRect<'a> {
+    pub left: &'a mut i32,
+    pub top: &'a mut i32,
+    pub right: &'a mut i32,
+    pub bottom: &'a mut i32,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub enum Event<'a> {
     Key {
         key: KeyCode,
         ex_key: bool,
@@ -210,5 +230,24 @@ pub enum Event {
         msg: UINT,
         wparam: WPARAM,
         lparam: LPARAM,
+    },
+    SizeRange {
+        max_width: &'a mut i32,
+        max_height: &'a mut i32,
+        max_left: &'a mut i32,
+        max_top: &'a mut i32,
+        min_track_width: &'a mut i32,
+        min_track_height: &'a mut i32,
+        max_track_width: &'a mut i32,
+        max_track_height: &'a mut i32,
+    },
+    SizeChanged {
+        width: u32,
+        height: u32,
+        type_: SizeChangeType,
+    },
+    SizeChanging {
+        ref_rect: RefRect<'a>,
+        type_: SizingSide,
     },
 }

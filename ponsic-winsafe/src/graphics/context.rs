@@ -9,7 +9,7 @@ pub struct Context {
 }
 
 impl Context {
-    pub unsafe fn from_raw(hwnd: HWND) -> Self {
+    pub const unsafe fn from_raw(hwnd: HWND) -> Self {
         Self { hwnd }
     }
 
