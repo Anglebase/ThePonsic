@@ -21,29 +21,24 @@ impl App {
     /// - 若函数未处理任何有效事件，则返回`None`
     pub fn handle_event(block: bool) -> Option<bool> {
         let mut msg = unsafe { std::mem::zeroed::<MSG>() };
-        if block {
-            let mut msg = unsafe { std::mem::zeroed::<MSG>() };
+        let result = if block {
             let result = unsafe { GetMessageW(&mut msg, null_mut(), 0, 0) };
-            unsafe {
-                TranslateMessage(&msg);
-                DispatchMessageW(&msg);
-            }
             Some(result != 0)
         } else {
             if let 0 = unsafe { PeekMessageW(&mut msg, null_mut(), 0, 0, PM_REMOVE) } {
-                None
-            } else {
-                unsafe {
-                    TranslateMessage(&msg);
-                    DispatchMessageW(&msg);
-                }
-                Some(msg.message != WM_QUIT)
+                return None;
             }
+            Some(msg.message != WM_QUIT)
+        };
+        unsafe {
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
         }
+        result
     }
 
     /// 向当前线程发出退出请求
-    /// 
+    ///
     /// # Param
     /// - code: 退出代码
     /// # Note
