@@ -1,14 +1,17 @@
+use error::SystemError;
+
 pub mod app;
 pub mod class;
 pub mod window;
 pub mod error;
 
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+pub type Result<T> = std::result::Result<T, SystemError>;
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::events::Event;
+    use crate::graphics::context_2d::Rect;
     use crate::safe_proc::Events;
     use crate::win::app::App;
     use crate::win::class::{Cursor, PreDefineClass};
@@ -33,7 +36,7 @@ mod tests {
             .build()?;
 
         let window = class
-            .window_builder(100, 100, 800, 600)
+            .window_builder(Rect::from_ps(100, 100, 800, 600))
             .set_style(&[window::WindowStyle::OverlappedWindow])
             .build()?;
 
@@ -50,13 +53,13 @@ mod tests {
             .build()?;
 
         let window = class
-            .window_builder(100, 100, 800, 600)
+            .window_builder(Rect::from_ps(100, 100, 800, 600))
             .set_style(&[window::WindowStyle::OverlappedWindow])
             .build()?;
 
         let class = PreDefineClass::button();
         let btn = class
-            .window_builder(100, 100, 100, 50)
+            .window_builder(Rect::from_ps(100, 100, 100, 50))
             .set_parent(window.id())
             .set_style(&[WindowStyle::Child])
             .set_title("Button")

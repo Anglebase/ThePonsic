@@ -66,6 +66,15 @@ impl Rect {
             bottom: pos.y + size.height as i32,
         }
     }
+
+    pub fn from_ps(px: i32, py: i32, sw: u32, sh: u32) -> Self {
+        Self {
+            left: px,
+            top: py,
+            right: px + sw as i32,
+            bottom: py + sh as i32,
+        }
+    }
 }
 
 impl Point {

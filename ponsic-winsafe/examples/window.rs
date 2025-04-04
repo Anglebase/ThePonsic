@@ -1,4 +1,4 @@
-use ponsic_winsafe::{wndproc, *};
+use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
 fn process(Events { event, .. }: Events) -> Option<isize> {
     match event {
@@ -22,7 +22,7 @@ fn main() {
         .unwrap();
 
     let window = class
-        .window_builder(100, 100, 800, 600)
+        .window_builder(Rect::from_ps(100, 100, 800, 600))
         .set_title("MyApp")
         .set_style(&[WindowStyle::OverlappedWindow])
         .build()

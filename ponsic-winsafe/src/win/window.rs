@@ -335,7 +335,7 @@ unsafe extern "system" fn enum_prop(handle: HWND, prop: LPCWSTR, _: HANDLE) -> B
 
 #[derive(Debug)]
 pub struct Builder {
-    pos_size: (i32, i32, i32, i32),
+    pos_size: (i32, i32, u32, u32),
     class_name: String,
     extra_styles: u32,
     style: u32,
@@ -348,7 +348,7 @@ impl Builder {
         self.parent = Some(window);
         self
     }
-    pub(super) fn new(class_name: &str, pos_size: (i32, i32, i32, i32)) -> Self {
+    pub(super) fn new(class_name: &str, pos_size: (i32, i32, u32, u32)) -> Self {
         Self {
             pos_size,
             class_name: class_name.into(),
@@ -545,8 +545,8 @@ impl Builder {
                 self.style,
                 self.pos_size.0,
                 self.pos_size.1,
-                self.pos_size.2,
-                self.pos_size.3,
+                self.pos_size.2 as _,
+                self.pos_size.3 as _,
                 if let Some(window) = self.parent {
                     window.handle as HWND
                 } else {
@@ -568,14 +568,14 @@ impl Builder {
 #[cfg(test)]
 mod tests {
     use super::{super::Result, *};
-    use crate::win::class;
+    use crate::{graphics::context_2d::Rect, win::class};
 
     #[test]
     fn window_builder_test() -> Result<()> {
         let class = class::Registrar::new("window_builder_test").build()?;
 
         let window = class
-            .window_builder(100, 100, 800, 600)
+            .window_builder(Rect::from_ps(100, 100, 800, 600))
             .set_title("Test")
             .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border]);
 
@@ -590,7 +590,7 @@ mod tests {
         let class = class::Registrar::new("window_prop_test").build()?;
 
         let window = class
-            .window_builder(100, 100, 800, 600)
+            .window_builder(Rect::from_ps(100, 100, 800, 600))
             .set_title("Test")
             .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border])
             .build()?;

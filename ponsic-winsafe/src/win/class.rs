@@ -1,4 +1,5 @@
 use crate::check_error;
+use crate::graphics::context_2d::Rect;
 use crate::safe_proc::WndProc;
 use crate::win::window;
 use std::ptr::null_mut;
@@ -67,8 +68,8 @@ impl Class {
         Self { name: name.into() }
     }
 
-    pub fn window_builder(&self, x: i32, y: i32, width: i32, height: i32) -> window::Builder {
-        window::Builder::new(&self.name, (x, y, width, height))
+    pub fn window_builder(&self, rect:Rect) -> window::Builder {
+        window::Builder::new(&self.name, (rect.x(), rect.y(), rect.width(), rect.height()))
     }
 }
 
