@@ -246,16 +246,16 @@ impl Window {
     ///
     /// # Note
     /// 此函数的调用是同步的，它将等待回调函数对消息进行处理，并返回回调函数的返回值
-    pub fn send(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> isize {
-        unsafe { SendMessageW(window.handle as _, WM_USER + msg, wparam, lparam) }
+    pub unsafe fn send(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> isize {
+        unsafe { SendMessageW(window.handle as _, msg, wparam, lparam) }
     }
 
     /// 向指定窗口回调函数发送自定义消息
     ///
     /// # Note
     /// 此函数的调用是异步的，它不等待回调函数对消息进行处理，直接返回，此函数不应传递引用
-    pub fn post(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> Result<i32, SystemError> {
-        match unsafe { PostMessageW(window.handle as _, msg + WM_USER, wparam, lparam) } {
+    pub unsafe fn post(window: WindowId, msg: u32, wparam: usize, lparam: isize) -> Result<i32, SystemError> {
+        match unsafe { PostMessageW(window.handle as _, msg, wparam, lparam) } {
             0 => {
                 Err(check_error().unwrap_err())
             }
@@ -264,29 +264,7 @@ impl Window {
     }
 
     pub const USER_DEF_BASE: u32 = WM_USER;
-
-    pub unsafe fn send_not_userdef(
-        window: WindowId,
-        msg: u32,
-        wparam: usize,
-        lparam: isize,
-    ) -> isize {
-        unsafe { SendMessageW(window.handle as _, msg, wparam, lparam) }
-    }
-
-    pub unsafe fn post_not_userdef(
-        window: WindowId,
-        msg: u32,
-        wparam: usize,
-        lparam: isize,
-    ) -> Result<i32, SystemError> {
-        match unsafe { PostMessageW(window.handle as _, msg, wparam, lparam) } {
-            0 => {
-                Err(check_error().unwrap_err())
-            }
-            res @ _ => Ok(res),
-        }
-    }
+    pub const APP_DEF_BASE: u32 = WM_APP;
 }
 
 impl WindowManager for Window {

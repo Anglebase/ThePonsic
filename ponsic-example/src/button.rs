@@ -29,7 +29,7 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
         {
             println!("Button pressed");
             Registry::with("MainWindow", |id: &WindowId| {
-                Window::post(*id, BUTTON_DOWN, 0, 0).unwrap();
+                unsafe { Window::post(*id, BUTTON_DOWN, 0, 0).unwrap() };
             });
             Some(0)
         }
