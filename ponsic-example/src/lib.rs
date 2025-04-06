@@ -1,5 +1,5 @@
 mod mainwindow;
 mod button;
 
-pub use mainwindow::MAINWINDOW_CLASS;
-pub use button::BUTTON_CLASS;
+pub use mainwindow::MainWindow;
+pub use button::Button;

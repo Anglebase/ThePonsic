@@ -1,4 +1,5 @@
 use gom::Registry;
+use inherits::inherits;
 use lazy_static::lazy_static;
 use ponsic::{
     graphics::context_2d::{Context2D, DrawClose, Rect},
@@ -25,7 +26,7 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
             Some(0)
         }
         Event::Mouse { button, status, .. }
-            if (Button::Left, ButtonStatus::Down) == (button, status) =>
+            if (ponsic::Button::Left, ButtonStatus::Down) == (button, status) =>
         {
             println!("Button pressed");
             Registry::with("MainWindow", |id: &WindowId| {
@@ -43,4 +44,19 @@ lazy_static! {
         .set_process(wndproc!(();button_process))
         .build()
         .unwrap();
+}
+
+#[inherits(Window)]
+pub struct Button {}
+
+impl Button {
+    pub fn new(rect: Rect, parent: WindowId) -> Result<Self, SystemError> {
+        let button = BUTTON_CLASS
+            .window_builder(rect)
+            .set_parent(parent)
+            .set_style(&[WindowStyle::Child])
+            .set_title("Button")
+            .build()?;
+        Ok(Self { parent: button })
+    }
 }
