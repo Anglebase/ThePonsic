@@ -31,6 +31,7 @@ pub struct Context2D<'a> {
     font: Font,
 }
 
+/// 高性能 2D 绘图上下文
 pub struct FastContext2D {
     hwnd: HWND,
     hdc: HDC,
@@ -164,7 +165,7 @@ impl<'a> Context2D<'a> {
         self.update_pen();
     }
 
-    pub fn set_pen(&mut self, pen: Pen) {
+    pub fn replace_pen(&mut self, pen: Pen) {
         self.pen = pen;
         unsafe {
             SelectObject(self.hdc(), self.pen.handle() as _);
@@ -196,7 +197,7 @@ impl Context2D<'_> {
         self.update_brush();
     }
 
-    pub fn set_brush(&mut self, brush: Brush) {
+    pub fn replace_brush(&mut self, brush: Brush) {
         self.brush = brush;
         unsafe {
             SelectObject(self.hdc, self.brush.handle() as _);
@@ -287,7 +288,7 @@ impl Context2D<'_> {
         self.update_font();
     }
 
-    pub fn set_font(&mut self, font: Font) {
+    pub fn replace_font(&mut self, font: Font) {
         self.font = font;
         unsafe {
             SelectObject(self.hdc, self.font.handle() as _);
@@ -300,6 +301,7 @@ impl<T: Context2DData> DrawClose for T {}
 impl<T: Context2DData> DrawPath for T {}
 impl<T: Context2DData> DrawPolygon for T {}
 impl<T: Context2DData> DrawText for T {}
-impl<T: Context2DData> PenSetter for T {}
-impl<T: Context2DData> BrushSetter for T {}
-impl<T: Context2DData> FontSetter for T {}
+impl<'a, 'b: 'a, T: Context2DData> PenSetter<'a, 'b> for T {}
+impl<'a, 'b: 'a, T: Context2DData> BrushSetter<'a, 'b> for T {}
+impl<'a, 'b: 'a, T: Context2DData> FontSetter<'a, 'b> for T {}
+impl<T :Context2DData> EnvironmentSetter for T {}

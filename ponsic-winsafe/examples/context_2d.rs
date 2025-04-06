@@ -34,6 +34,11 @@ fn paint(mut context: Context2D<'_>) {
         bottom: 300,
     });
 
+    {
+        let b = GenBrush::Solid(Color::from_rgb(255, 0, 0)).create();
+        context.set_brush(&b);
+    }
+
     let mut rect = Rect::from_pos_size(
         Point { x: 10, y: 10 },
         Size {

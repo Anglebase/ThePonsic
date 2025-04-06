@@ -1,4 +1,4 @@
-use super::{Brush, DrawTextMode, Font, Pen, Point, Rect};
+use super::{Brush, Color, DrawTextMode, Font, Pen, Point, Rect};
 use std::ptr::null_mut;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -228,26 +228,53 @@ pub trait DrawText: Context2DData {
     }
 }
 
-pub trait BrushSetter: Context2DData {
-    unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
-        unsafe {
-            SelectObject(self.hdc(), brush.handle() as _);
-        }
-    }
-}
-
-pub trait PenSetter: Context2DData {
-    unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
+pub trait PenSetter<'a, 'b: 'a>: Context2DData {
+    fn set_pen(&'a mut self, pen: &'b Pen) {
         unsafe {
             SelectObject(self.hdc(), pen.handle() as _);
         }
     }
 }
 
-pub trait FontSetter: Context2DData {
-    unsafe fn set_font_uncatch(&mut self, font: &Font) {
+pub trait BrushSetter<'a, 'b: 'a>: Context2DData {
+    fn set_brush(&'a mut self, brush: &'b Brush) {
+        unsafe {
+            SelectObject(self.hdc(), brush.handle() as _);
+        }
+    }
+}
+
+pub trait FontSetter<'a, 'b: 'a>: Context2DData {
+    fn set_font(&'a mut self, font: &'b Font) {
         unsafe {
             SelectObject(self.hdc(), font.handle() as _);
+        }
+    }
+}
+
+#[repr(u32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum BackMode {
+    Transparent = TRANSPARENT,
+    Opaque = OPAQUE,
+}
+
+pub trait EnvironmentSetter: Context2DData {
+    fn set_back_color(&self, color: Color) {
+        unsafe {
+            SetBkColor(self.hdc(), color.into());
+        }
+    }
+
+    fn set_text_color(&self, color: Color) {
+        unsafe {
+            SetTextColor(self.hdc(), color.into());
+        }
+    }
+
+    fn set_back_mode(&self, mode: BackMode) {
+        unsafe {
+            SetBkMode(self.hdc(), mode as _);
         }
     }
 }
