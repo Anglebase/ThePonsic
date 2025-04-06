@@ -297,11 +297,19 @@ pub enum NoClient {
         status: ButtonStatus,
         at: CursorAt,
     },
+    Move {
+        pos: (i16, i16),
+        at: CursorAt,
+    },
 }
 
+/// 窗口过程函数返回值
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum Return {
+    /// 指示处理已完成且要返回 0 
     Finish,
+    /// 指示后续处理应交由窗口的默认行为
     Default,
+    /// 指示处理已完成，但要返回自定义值
     Data(isize),
 }

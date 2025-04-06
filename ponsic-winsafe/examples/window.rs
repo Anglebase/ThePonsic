@@ -12,8 +12,8 @@ fn process(Events { event, .. }: Events) -> Return {
         }
         Event::Other { msg, .. } => {
             let s = translate_msg(msg);
-            if s == "UNDEFINED" {
-                println!("{}", msg);
+            if s == "WM_NCMOUSEMOVE" || s == "WM_NCMOUSELEAVE" {
+                println!("{}", s);
             }
             Return::Default
         }

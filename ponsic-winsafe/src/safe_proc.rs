@@ -200,6 +200,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
             }
         }
         WM_NCHITTEST => translate_nc_hit_test(lparam),
+        WM_NCMOUSEMOVE => translate_nc_mouse_move_event(wparam, lparam),
         _ if msg >= WM_USER => Event::UserDef {
             msg: msg - WM_USER,
             wparam,
@@ -213,10 +214,41 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
     }
 }
 
+const fn translate_nc_mouse_move_event(wparam: WPARAM, lparam: LPARAM) -> Event<'static> {
+    let pos = lparam_to_points(lparam);
+    let at = match (wparam & 0xffff) as isize {
+        HTBORDER => CursorAt::Border,
+        HTBOTTOM => CursorAt::Bottom,
+        HTBOTTOMLEFT => CursorAt::BottomLeft,
+        HTBOTTOMRIGHT => CursorAt::BottomRight,
+        HTCAPTION => CursorAt::Caption,
+        HTCLIENT => CursorAt::Client,
+        HTCLOSE => CursorAt::Close,
+        HTERROR => CursorAt::Error,
+        HTHELP => CursorAt::Help,
+        HTHSCROLL => CursorAt::HScroll,
+        HTLEFT => CursorAt::Left,
+        HTMENU => CursorAt::Menu,
+        HTMAXBUTTON => CursorAt::MaxButton,
+        HTMINBUTTON => CursorAt::MinButton,
+        HTNOWHERE => CursorAt::NoWhere,
+        HTRIGHT => CursorAt::Right,
+        HTSIZE => CursorAt::Size,
+        HTSYSMENU => CursorAt::Sysmenu,
+        HTTOP => CursorAt::Top,
+        HTTOPLEFT => CursorAt::TopLeft,
+        HTTOPRIGHT => CursorAt::TopRight,
+        HTTRANSPARENT => CursorAt::Transparent,
+        HTVSCROLL => CursorAt::VScroll,
+        _ => unreachable!(),
+    };
+
+    Event::NoClient(NoClient::Move { pos, at })
+}
+
 #[allow(unused)]
 const fn translate_nc_mouse_button(msg: UINT, wparam: WPARAM, lparam: LPARAM) -> Event<'static> {
-    // let (x, y) = lparam_to_points(lparam);
-    let (x, y) = (0, 0);
+    let pos = lparam_to_points(lparam);
     let at = match (wparam & 0xffff) as isize {
         HTBORDER => CursorAt::Border,
         HTBOTTOM => CursorAt::Bottom,
@@ -269,7 +301,7 @@ const fn translate_nc_mouse_button(msg: UINT, wparam: WPARAM, lparam: LPARAM) ->
     };
     Event::NoClient(NoClient::Mouse {
         button,
-        pos: (x, y),
+        pos,
         status,
         at,
     })
@@ -277,7 +309,7 @@ const fn translate_nc_mouse_button(msg: UINT, wparam: WPARAM, lparam: LPARAM) ->
 
 #[allow(unused)]
 const fn lparam_to_points(lparam: LPARAM) -> (i16, i16) {
-    let p = unsafe { (lparam as *mut POINTS).as_ref().unwrap() };
+    let p = unsafe { (&lparam as *const _ as *const POINTS).as_ref().unwrap() };
     (p.x, p.y)
 }
 
