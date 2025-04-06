@@ -278,3 +278,11 @@ pub trait EnvironmentSetter: Context2DData {
         }
     }
 }
+
+pub trait DrawPixel: Context2DData {
+    fn draw_pixel(&self, p: Point, color: Color) {
+        unsafe {
+            SetPixel(self.hdc(), p.x, p.y, color.into());
+        }
+    }
+}
