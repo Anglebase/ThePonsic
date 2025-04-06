@@ -1,11 +1,12 @@
 use winapi::{
     shared::windef::HWND,
-    um::winuser::{GWLP_USERDATA, GetWindowLongPtrW, SetWindowLongPtrW},
+    um::winuser::{GWLP_USERDATA, GetWindowLongPtrW},
 };
 
-use crate::WindowId;
+use crate::{The, WindowId};
 
-pub(crate) struct WindowBindData<T> {
+/// 窗口绑定数据
+pub struct WindowBindData<T> {
     pub data_ptr: *mut T,
     pub type_name: &'static str,
 }
@@ -20,64 +21,53 @@ impl<T> WindowBindData<T> {
         }
     }
 
-    pub(crate) fn free(&self) {
+    /// 释放窗口绑定数据
+    ///
+    /// # Note
+    /// 此函数在宏`wndproc!(...)`中使用
+    pub fn free(&self) {
+        assert_eq!(self.type_name, std::any::type_name::<T>());
         unsafe {
-            let _ = Box::from_raw(self.data_ptr as *mut T);
+            drop(Box::from_raw(self.data_ptr));
         }
     }
 }
 
-pub fn attach<T>(id: WindowId, data: T) {
-    let hwnd = unsafe { id.handle() as HWND };
-    let data_ptr = Box::into_raw(Box::new(WindowBindData::new(data)));
+pub(crate) fn make_ptr<T>(data: T) -> *mut WindowBindData<T> {
+    Box::into_raw(Box::new(WindowBindData::new(data)))
+}
+
+/// 获取窗口所关联的数据实例
+///
+/// # Note
+/// 此函数在宏`wndproc!(...)`中使用
+pub unsafe fn cast_warpper<T>(id: WindowId) -> Option<WindowBindData<T>> {
+    let ptr =
+        unsafe { GetWindowLongPtrW(id.handle() as HWND, GWLP_USERDATA) as *mut WindowBindData<T> };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(*unsafe { Box::from_raw(ptr) })
+    }
+}
+
+/// 获取窗口所关联的数据
+///
+/// # Safety
+/// 使用此方法时需要保证其泛型类型与窗口所绑定的数据类型一致，否则会引发不可预料的后果
+pub fn assert_cast<T>(hwnd: WindowId) -> The<T> {
+    let hwnd = unsafe { hwnd.handle() } as HWND;
     unsafe {
-        SetWindowLongPtrW(hwnd, GWLP_USERDATA, data_ptr as _);
+        let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA) as *mut WindowBindData<T>;
+        if ptr.is_null() {
+            return The::from_raw(0 as _);
+        }
+        let dref = ptr.as_mut().unwrap();
+        assert_eq!(
+            dref.type_name,
+            std::any::type_name::<T>(),
+            "类型断言失败: 过程回调函数与窗口构建器各自指定的窗口绑定类型类型不一致"
+        );
+        The::from_raw(dref.data_ptr as _)
     }
-}
-
-pub unsafe fn cast_uncheck<T>(id: &WindowId) -> Option<&mut T> {
-    let hwnd = unsafe { id.handle() } as HWND;
-    let warpper_ptr = unsafe { GetWindowLongPtrW(hwnd, GWLP_USERDATA) } as *mut WindowBindData<T>;
-    if warpper_ptr.is_null() {
-        return None;
-    }
-    let warpper_ptr = unsafe { warpper_ptr.as_mut().unwrap() };
-    let data_ptr = warpper_ptr.data_ptr;
-    Some(unsafe { data_ptr.as_mut().unwrap() })
-}
-
-pub fn assert_cast<T>(id: &WindowId) -> Option<&mut T> {
-    let hwnd = unsafe { id.handle() } as HWND;
-    let warpper_ptr = unsafe { GetWindowLongPtrW(hwnd, GWLP_USERDATA) } as *mut WindowBindData<T>;
-    if warpper_ptr.is_null() {
-        return None;
-    }
-    let warpper_ptr = unsafe { warpper_ptr.as_mut().unwrap() };
-    let data_ptr = warpper_ptr.data_ptr;
-    assert_eq!(warpper_ptr.type_name, std::any::type_name::<T>());
-    Some(unsafe { data_ptr.as_mut().unwrap() })
-}
-
-pub fn cast<T>(id: &WindowId) -> Option<&mut T> {
-    let hwnd = unsafe { id.handle() } as HWND;
-    let warpper_ptr = unsafe { GetWindowLongPtrW(hwnd, GWLP_USERDATA) } as *mut WindowBindData<T>;
-    if warpper_ptr.is_null() {
-        return None;
-    }
-    let warpper_ptr = unsafe { warpper_ptr.as_mut().unwrap() };
-    let data_ptr = warpper_ptr.data_ptr;
-    if warpper_ptr.type_name != std::any::type_name::<T>() {
-        return None;
-    }
-    Some(unsafe { data_ptr.as_mut().unwrap() })
-}
-
-pub unsafe fn free_data<T>(id: &WindowId) {
-    let hwnd = unsafe { id.handle() } as HWND;
-    let warpper_ptr = unsafe { GetWindowLongPtrW(hwnd, GWLP_USERDATA) } as *mut WindowBindData<T>;
-    if warpper_ptr.is_null() {
-        return;
-    }
-    let warpper_ptr = unsafe { warpper_ptr.as_mut().unwrap() };
-    warpper_ptr.free();
 }

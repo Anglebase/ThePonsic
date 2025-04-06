@@ -2,7 +2,6 @@
 
 use winapi::um::winuser::*;
 
-
 pub const fn translate_msg(code: u32) -> &'static str {
     match code {
         0x0129 => "WM_QUERYUISTATE",

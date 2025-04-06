@@ -4,7 +4,7 @@ use std::{
 };
 
 /// 内存访问器
-/// 
+///
 /// 此结构体是类似于`Box<T>`的智能指针，但是该指针不持有所有权，不参与内存申请与释放的管理，仅用于访问既分配的内存
 pub struct The<T> {
     the: Option<Box<T>>,
@@ -36,17 +36,6 @@ impl<T> The<T> {
             } else {
                 Some(unsafe { Box::from_raw(ptr) })
             },
-        }
-    }
-
-    /// 由`The<T>`释放既分配内存
-    /// 
-    /// # Safety
-    /// 
-    /// 此函数会释放`The<T>`所包含的值，因此调用者必须保证`The<T>`所包含的值没有被其他地方使用，否则可能会造成悬垂引用
-    pub unsafe fn free(mut self) {
-        if let Some(the) = self.the.take() {
-            let _ = the;
         }
     }
 

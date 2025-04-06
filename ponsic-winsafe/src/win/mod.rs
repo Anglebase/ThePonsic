@@ -2,9 +2,9 @@ use error::SystemError;
 
 pub mod app;
 pub mod class;
-pub mod window;
 pub mod error;
 pub mod gen_by_py;
+pub mod window;
 
 pub type Result<T> = std::result::Result<T, SystemError>;
 
@@ -17,7 +17,7 @@ mod tests {
     use crate::win::app::App;
     use crate::win::class::{Cursor, PreDefineClass};
     use crate::win::window::{WindowManager, WindowStyle};
-    use crate::{wndproc, Return};
+    use crate::{Return, wndproc};
 
     fn proc(Events { event, .. }: Events) -> Return {
         println!("{:?}", event);

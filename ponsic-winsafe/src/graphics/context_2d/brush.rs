@@ -63,7 +63,9 @@ impl GenBrush {
                 },
                 hatch,
             ) => Brush {
-                brush: unsafe { CreateHatchBrush(hatch.to_sys_enum() as _, RGB(*red, *green, *blue)) },
+                brush: unsafe {
+                    CreateHatchBrush(hatch.to_sys_enum() as _, RGB(*red, *green, *blue))
+                },
             },
         }
     }

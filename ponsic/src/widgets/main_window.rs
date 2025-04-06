@@ -1,7 +1,8 @@
 use inherits::inherits;
 use lazy_static::lazy_static;
 use ponsic_winsafe::{
-    cast, graphics::context_2d::Rect, wndproc, App, Class, Event, Events, Registrar, Return, SystemError, The, Window, WindowManager, WindowStyle
+    App, Class, Event, Events, Registrar, Return, SystemError, The, Window, WindowManager,
+    WindowStyle, assert_cast, graphics::context_2d::Rect, wndproc,
 };
 
 use crate::{get_class, ponsic_name};
@@ -44,7 +45,7 @@ impl MainWindow {
             .bind(data)
             .build()?;
 
-        let data = unsafe { cast::<MainWindowData>(window.id()) };
+        let data = assert_cast::<MainWindowData>(window.id());
 
         Ok(Self {
             data,

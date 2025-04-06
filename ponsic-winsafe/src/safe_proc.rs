@@ -1,4 +1,4 @@
-use crate::{The, WindowId, events::*, graphics::Context, win::window::WindowHandle};
+use crate::{events::*, graphics::Context, win::window::WindowHandle};
 pub use winapi::shared::windef::HWND;
 use winapi::shared::{
     minwindef::{LPARAM, UINT, WPARAM},
@@ -448,18 +448,6 @@ pub struct Events<'a> {
     pub event: Event<'a>,
 }
 
-/// 获取窗口所关联的数据
-///
-/// # Safety
-/// 使用此方法时需要保证其泛型类型与窗口所绑定的数据类型一致，否则会引发不可预料的后果
-pub unsafe fn cast<T>(hwnd: WindowId) -> The<T> {
-    let hwnd = unsafe { hwnd.handle() } as HWND;
-    unsafe {
-        let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA);
-        The::from_raw(ptr as _)
-    }
-}
-
 /// 此函数在宏 `wndproc!(...)` 中使用，不应直接调用
 pub fn bind_when_create(hwnd: HWND, lparam: isize) {
     let lparam = lparam as *const CREATESTRUCTW;
@@ -507,7 +495,11 @@ macro_rules! wndproc {
         {
             extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
                 if __msg == 0x2 /* WM_DESTROY */ {
-                    unsafe { $crate::cast::<$t>($crate::WindowId::from_raw(__hwnd as _)).free() };
+                    if let Some(__w) = unsafe { $crate::cast_warpper::<$t>(
+                        $crate::WindowId::from_raw(__hwnd as _)
+                    ) }{
+                        __w.free();
+                    };
                 }
                 if __msg == 0x1 /* WM_CREATE */ {
                     $crate::bind_when_create(__hwnd, __lparam);
@@ -518,7 +510,7 @@ macro_rules! wndproc {
                         window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
                         event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     },
-                    unsafe { $crate::cast::<$t>($crate::WindowId::from_raw(__hwnd as _)) },
+                    unsafe { $crate::assert_cast::<$t>($crate::WindowId::from_raw(__hwnd as _)) },
                 );
                 match __result {
                     $crate::Return::Finish => 0,

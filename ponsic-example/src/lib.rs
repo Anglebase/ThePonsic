@@ -1,5 +1,5 @@
-mod mainwindow;
 mod button;
+mod mainwindow;
 
-pub use mainwindow::MainWindow;
 pub use button::Button;
+pub use mainwindow::MainWindow;

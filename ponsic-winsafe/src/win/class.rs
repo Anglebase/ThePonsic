@@ -68,8 +68,11 @@ impl Class {
         Self { name: name.into() }
     }
 
-    pub fn window_builder(&self, rect:Rect) -> window::Builder {
-        window::Builder::new(&self.name, (rect.x(), rect.y(), rect.width(), rect.height()))
+    pub fn window_builder(&self, rect: Rect) -> window::Builder {
+        window::Builder::new(
+            &self.name,
+            (rect.x(), rect.y(), rect.width(), rect.height()),
+        )
     }
 }
 
@@ -154,7 +157,7 @@ impl Registrar {
     }
 
     /// 设置窗口处理函数
-    /// 
+    ///
     /// 参考函数式宏 `wndproc!(...)`
     pub fn set_process(mut self, process: WndProc) -> Self {
         self.process = Some(unsafe { process.into_raw() });

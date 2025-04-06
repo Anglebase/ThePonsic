@@ -8,7 +8,7 @@ use winapi::um::libloaderapi::GetModuleHandleW;
 use winapi::um::winnt::{HANDLE, LPCWSTR};
 use winapi::um::winuser::*;
 
-use crate::{SystemError, check_error};
+use crate::{SystemError, check_error, make_ptr};
 
 /// 参考 [WIN32 窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/window-styles)
 /// 及 [WIN32 扩展窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/extended-window-styles)
@@ -239,14 +239,6 @@ pub trait WindowManager {
             );
         }
     }
-
-    fn bind<T>(&self, the: T) {
-        let the = Box::new(the);
-        let ptr = Box::into_raw(the);
-        unsafe {
-            SetWindowLongPtrW(self.get_handle() as HWND, GWLP_USERDATA, ptr as isize);
-        }
-    }
 }
 
 impl Window {
@@ -355,7 +347,7 @@ impl Builder {
     }
 
     /// 设置窗口的样式
-    /// 
+    ///
     /// 参考 [WindowStyle]
     pub fn set_style(mut self, style: &[WindowStyle]) -> Self {
         for &style in style {
@@ -534,9 +526,8 @@ impl Builder {
     }
 
     /// 绑定窗口的关联数据
-    pub fn bind<T>(mut self, the: T) -> Self {
-        let the = Box::new(the);
-        self.ptr = Box::into_raw(the) as _;
+    pub fn bind<T>(mut self, data: T) -> Self {
+        self.ptr = make_ptr(data) as _;
         self
     }
 

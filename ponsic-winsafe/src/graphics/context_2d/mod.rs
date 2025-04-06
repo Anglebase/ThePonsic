@@ -304,5 +304,5 @@ impl<T: Context2DData> DrawText for T {}
 impl<'a, 'b: 'a, T: Context2DData> PenSetter<'a, 'b> for T {}
 impl<'a, 'b: 'a, T: Context2DData> BrushSetter<'a, 'b> for T {}
 impl<'a, 'b: 'a, T: Context2DData> FontSetter<'a, 'b> for T {}
-impl<T :Context2DData> EnvironmentSetter for T {}
-impl<T :Context2DData> DrawPixel for T {}
+impl<T: Context2DData> EnvironmentSetter for T {}
+impl<T: Context2DData> DrawPixel for T {}

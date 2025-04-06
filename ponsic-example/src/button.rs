@@ -73,7 +73,7 @@ impl Button {
             .bind(c)
             .build()?;
 
-        let the = unsafe { cast::<Call>(button.id()) };
+        let the = assert_cast::<Call>(button.id());
 
         Ok(Self {
             parent: button,

@@ -58,7 +58,9 @@ fn button_process(Events { event, window }: Events, mut data: The<PushButtonData
                     window.redraw();
                 } else if status == ButtonStatus::Up {
                     data.state = false;
-                    data.callback.iter_mut().for_each(|callback| callback(false));
+                    data.callback
+                        .iter_mut()
+                        .for_each(|callback| callback(false));
                     window.redraw();
                 }
             }
@@ -100,7 +102,7 @@ impl PushButton {
             .set_style(&[WindowStyle::Child])
             .bind(data)
             .build()?;
-        let data = unsafe { cast::<PushButtonData>(window.id()) };
+        let data = assert_cast::<PushButtonData>(window.id());
         Ok(Self {
             data,
             parent: window,
