@@ -54,14 +54,6 @@ pub trait DrawOpen: Context2DData {
     }
 }
 
-pub trait PenSetter: Context2DData {
-    unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
-        unsafe {
-            SelectObject(self.hdc(), pen.handle() as _);
-        }
-    }
-}
-
 pub trait DrawClose: Context2DData {
     fn rectangle(&self, rect: Rect) {
         unsafe {
@@ -124,14 +116,6 @@ pub trait DrawClose: Context2DData {
                 dx as _,
                 dy as _,
             );
-        }
-    }
-}
-
-pub trait BrushSetter: Context2DData {
-    unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
-        unsafe {
-            SelectObject(self.hdc(), brush.handle() as _);
         }
     }
 }
@@ -219,6 +203,7 @@ pub trait DrawPolygon: Context2DData {
         }
     }
 }
+
 pub trait DrawText: Context2DData {
     fn out_text(&self, text: &str, p: Point) {
         let text: Vec<u16> = text.encode_utf16().collect();
@@ -239,6 +224,22 @@ pub trait DrawText: Context2DData {
                 rect as *mut _ as _,
                 format,
             )
+        }
+    }
+}
+
+pub trait BrushSetter: Context2DData {
+    unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
+        unsafe {
+            SelectObject(self.hdc(), brush.handle() as _);
+        }
+    }
+}
+
+pub trait PenSetter: Context2DData {
+    unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
+        unsafe {
+            SelectObject(self.hdc(), pen.handle() as _);
         }
     }
 }
