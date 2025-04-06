@@ -526,7 +526,7 @@ impl Builder {
     }
 
     /// 绑定窗口的关联数据
-    pub fn bind<T>(mut self, data: T) -> Self {
+    pub fn bind_data<T>(mut self, data: T) -> Self {
         self.ptr = make_ptr(data) as _;
         self
     }

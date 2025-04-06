@@ -70,7 +70,7 @@ impl Button {
             .set_parent(parent)
             .set_style(&[WindowStyle::Child])
             .set_title("Button")
-            .bind(c)
+            .bind_data(c)
             .build()?;
 
         let the = assert_cast::<Call>(button.id());

@@ -42,7 +42,7 @@ impl MainWindow {
             .window_builder(rect)
             .set_title(title)
             .set_style(&[WindowStyle::OverlappedWindow])
-            .bind(data)
+            .bind_data(data)
             .build()?;
 
         let data = assert_cast::<MainWindowData>(window.id());

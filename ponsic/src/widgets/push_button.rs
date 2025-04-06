@@ -100,7 +100,7 @@ impl PushButton {
             .set_title(text)
             .set_parent(parent.id())
             .set_style(&[WindowStyle::Child])
-            .bind(data)
+            .bind_data(data)
             .build()?;
         let data = assert_cast::<PushButtonData>(window.id());
         Ok(Self {

@@ -42,7 +42,7 @@ fn main() {
         .window_builder(Rect::from_ps(100, 100, 800, 600))
         .set_title("MyApp")
         .set_style(&[WindowStyle::OverlappedWindow])
-        .bind(Data {
+        .bind_data(Data {
             a: 10,
             b: "Hello".into(),
         })
