@@ -1,5 +1,3 @@
-use inherits::inherits;
-use lazy_static::lazy_static;
 use ponsic::{graphics::context_2d::Rect, *};
 
 use crate::button::BUTTON_DOWN;
