@@ -26,8 +26,15 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
             *min_track_height = 480;
             Some(0)
         }
-        _ => {
-            // println!("{:?}", e);
+        Event::SizeChanging {
+            type_: SizingSide::Unknown(a),
+            ..
+        } => {
+            println!("{}", a);
+            panic!("Unknown SizingSide");
+        }
+        e @ _ => {
+            println!("{:?}", e);
             None
         }
     }

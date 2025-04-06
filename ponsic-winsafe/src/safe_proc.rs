@@ -297,7 +297,8 @@ const fn wparam_to_size_side(wparam: WPARAM) -> SizingSide {
         5 => SizingSide::TopRight,
         7 => SizingSide::BottomLeft,
         8 => SizingSide::BottomRight,
-        _ => unreachable!(),
+        9 => SizingSide::MoveCauseExitMaximize,
+        param @ _ => SizingSide::Unknown(param),
     }
 }
 
@@ -315,7 +316,7 @@ const fn translate_window_size(w_param: WPARAM, l_param: LPARAM) -> Event<'stati
         SIZE_MAXSHOW => SizeChangeType::MaxShow,
         SIZE_MINIMIZED => SizeChangeType::Minimize,
         SIZE_RESTORED => SizeChangeType::Restore,
-        _ => unreachable!(),
+        param @ _ => SizeChangeType::Unknown(param),
     };
     Event::SizeChanged {
         width,

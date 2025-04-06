@@ -148,6 +148,7 @@ pub enum SizeChangeType {
     Restore,
     MaxHide,
     MaxShow,
+    Unknown(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
@@ -181,6 +182,8 @@ pub enum SizingSide {
     TopRight,
     BottomLeft,
     BottomRight,
+    MoveCauseExitMaximize,
+    Unknown(usize),
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
