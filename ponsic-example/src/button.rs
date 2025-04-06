@@ -1,4 +1,3 @@
-use gom::Registry;
 use inherits::inherits;
 use lazy_static::lazy_static;
 use ponsic::{
@@ -15,7 +14,7 @@ fn paint(context: Context2D<'_>) {
     });
 }
 pub const BUTTON_DOWN: u32 = 0;
-fn button_process(Events { event, .. }: Events) -> Option<isize> {
+fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Option<isize> {
     match event {
         Event::Destroy => {
             println!("Button destroyed");
@@ -28,10 +27,19 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
         Event::Mouse { button, status, .. }
             if (ponsic::Button::Left, ButtonStatus::Down) == (button, status) =>
         {
-            println!("Button pressed");
-            Registry::with("MainWindow", |id: &WindowId| {
-                unsafe { Window::post(*id, BUTTON_DOWN, 0, 0).unwrap() };
-            });
+            if let Some(mut the) = the.as_mut() {
+                let f = the.callback.as_mut();
+                (*f)(true);
+            }
+            Some(0)
+        }
+        Event::Mouse { button, status, .. }
+            if (ponsic::Button::Left, ButtonStatus::Up) == (button, status) =>
+        {
+            if let Some(mut the) = the.as_mut() {
+                let f = the.callback.as_mut();
+                (*f)(false);
+            }
             Some(0)
         }
         _ => None,
@@ -41,22 +49,45 @@ fn button_process(Events { event, .. }: Events) -> Option<isize> {
 lazy_static! {
     pub static ref BUTTON_CLASS: Class = Registrar::new("Button")
         .set_cursor(Cursor::Arrow)
-        .set_process(wndproc!(();button_process))
+        .set_process(wndproc!(Call;button_process))
         .build()
         .unwrap();
 }
 
 #[inherits(Window)]
-pub struct Button {}
+pub struct Button {
+    the: The<Call>,
+}
 
 impl Button {
     pub fn new(rect: Rect, parent: WindowId) -> Result<Self, SystemError> {
+        let c = Call {
+            callback: Box::new(|_| {}),
+        };
+
         let button = BUTTON_CLASS
             .window_builder(rect)
             .set_parent(parent)
             .set_style(&[WindowStyle::Child])
             .set_title("Button")
+            .bind(c)
             .build()?;
-        Ok(Self { parent: button })
+
+        let the = cast::<Call>(button.id());
+
+        Ok(Self {
+            parent: button,
+            the,
+        })
     }
+
+    pub fn set_callback(&mut self, callback: impl FnMut(bool) + 'static) {
+        if let Some(mut the) = self.the.as_mut() {
+            the.callback = Box::new(callback);
+        }
+    }
+}
+
+pub struct Call {
+    callback: Box<dyn FnMut(bool) + 'static>,
 }
