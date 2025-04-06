@@ -1,6 +1,7 @@
 use std::{
     fmt::{Debug, Display},
     ops::{Deref, DerefMut},
+    ptr::null,
 };
 
 /// 内存访问器
@@ -8,6 +9,7 @@ use std::{
 /// 此结构体是类似于`Box<T>`的智能指针，但是该指针不持有所有权，不参与内存申请与释放的管理，仅用于访问既分配的内存
 pub struct The<T> {
     the: Option<Box<T>>,
+    _marker: *const (),
 }
 
 impl<T> Debug for The<T> {
@@ -36,6 +38,7 @@ impl<T> The<T> {
             } else {
                 Some(unsafe { Box::from_raw(ptr) })
             },
+            _marker: null(),
         }
     }
 
