@@ -1,3 +1,5 @@
+mod utils;
+
 #[cfg(target_os = "windows")]
 pub mod widgets;
 

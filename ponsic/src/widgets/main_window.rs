@@ -4,7 +4,7 @@ use ponsic_winsafe::{
     cast, graphics::context_2d::Rect, wndproc, App, Class, Event, Events, Registrar, Return, SystemError, The, Window, WindowManager, WindowStyle
 };
 
-use crate::ponsic_name;
+use crate::{get_class, ponsic_name};
 
 fn main_window_process(Events { event, .. }: Events, _data: The<MainWindowData>) -> Return {
     match event {
@@ -33,10 +33,7 @@ pub struct MainWindowData {}
 
 impl MainWindow {
     pub fn new(rect: Rect, title: &str) -> Result<Self, SystemError> {
-        let class = MAINWINDOW_CLASS
-            .as_ref()
-            .map(|ok| ok.clone())
-            .map_err(|err| err.clone())?;
+        let class = get_class!(MAINWINDOW_CLASS)?;
 
         let data = MainWindowData {};
 
