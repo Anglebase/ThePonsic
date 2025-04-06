@@ -1,7 +1,7 @@
 use gom::Registry;
 use lazy_static::lazy_static;
 use ponsic::{
-    graphics::context_2d::{Context2D, Rect},
+    graphics::context_2d::{Context2D, DrawClose, Rect},
     *,
 };
 fn paint(context: Context2D<'_>) {

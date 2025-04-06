@@ -2,8 +2,10 @@ mod brush;
 mod color;
 mod pen;
 mod text;
+mod traits;
 mod types;
-use std::{fmt::Debug, ptr::null_mut};
+use std::fmt::Debug;
+pub use traits::*;
 
 use super::context::Context;
 pub use brush::*;
@@ -27,6 +29,57 @@ pub struct Context2D<'a> {
     brush: Brush,
     font_data: GenFont,
     font: Font,
+}
+
+pub struct FastContext2D {
+    hwnd: HWND,
+    hdc: HDC,
+    ps: PAINTSTRUCT,
+}
+
+impl FastContext2D {
+    pub fn new(context: Context) -> Self {
+        let mut ps = unsafe { std::mem::zeroed::<PAINTSTRUCT>() };
+        let hwnd = unsafe { context.hwnd() };
+        let hdc = unsafe { BeginPaint(hwnd, &mut ps) };
+        Self { hwnd, hdc, ps }
+    }
+}
+
+impl Drop for FastContext2D {
+    fn drop(&mut self) {
+        unsafe {
+            EndPaint(self.hwnd, &self.ps);
+        }
+    }
+}
+
+impl Context2DData for Context2D<'_> {
+    unsafe fn handle(&self) -> HWND {
+        self.hwnd
+    }
+
+    unsafe fn hdc(&self) -> HDC {
+        self.hdc
+    }
+
+    unsafe fn ps(&self) -> PAINTSTRUCT {
+        self.ps
+    }
+}
+
+impl Context2DData for FastContext2D {
+    unsafe fn handle(&self) -> HWND {
+        self.hwnd
+    }
+
+    unsafe fn hdc(&self) -> HDC {
+        self.hdc
+    }
+
+    unsafe fn ps(&self) -> PAINTSTRUCT {
+        self.ps
+    }
 }
 
 impl Debug for Context2D<'_> {
@@ -73,54 +126,11 @@ impl Context2D<'_> {
     }
 }
 
-impl Context2D<'_> {
-    pub fn line(&self, p1: Point, p2: Point) {
-        unsafe {
-            MoveToEx(self.hdc, p1.x, p1.y, null_mut());
-            LineTo(self.hdc, p2.x, p2.y);
-        }
-    }
-
-    pub fn polyline(&self, points: &[Point]) {
-        unsafe {
-            Polyline(self.hdc, points.as_ptr() as _, points.len() as _);
-        }
-    }
-
-    pub fn arc(&self, border: Rect, p1: Point, p2: Point) {
-        unsafe {
-            Arc(
-                self.hdc,
-                border.left,
-                border.top,
-                border.right,
-                border.bottom,
-                p1.x,
-                p1.y,
-                p2.x,
-                p2.y,
-            );
-        }
-    }
-
-    pub fn angle_arc(&self, orgin: Point, radius: u32, start: f32, end: f32) {
-        unsafe {
-            AngleArc(self.hdc, orgin.x, orgin.y, radius, start, end);
-        }
-    }
-
-    pub fn poly_bezier(&self, points: &[Point]) {
-        unsafe {
-            PolyBezier(self.hdc, points.as_ptr() as _, points.len() as _);
-        }
-    }
-}
-
 impl<'a> Context2D<'a> {
     fn update_pen(&mut self) {
         self.pen = self.pen_data.create_by_ref().unwrap();
         unsafe {
-            SelectObject(self.hdc, self.pen.handle() as _);
+            SelectObject(self.hdc(), self.pen.handle() as _);
         }
     }
 
@@ -157,79 +167,7 @@ impl<'a> Context2D<'a> {
     pub fn set_pen(&mut self, pen: Pen) {
         self.pen = pen;
         unsafe {
-            SelectObject(self.hdc, self.pen.handle() as _);
-        }
-    }
-
-    pub unsafe fn set_pen_uncatch(&mut self, pen: &Pen) {
-        unsafe {
-            SelectObject(self.hdc, pen.handle() as _);
-        }
-    }
-}
-
-impl Context2D<'_> {
-    pub fn rectangle(&self, rect: Rect) {
-        unsafe {
-            Rectangle(self.hdc, rect.left, rect.top, rect.right, rect.bottom);
-        }
-    }
-
-    pub fn ellipse(&self, rect: Rect) {
-        unsafe {
-            Ellipse(self.hdc, rect.left, rect.top, rect.right, rect.bottom);
-        }
-    }
-
-    pub fn polygon(&self, points: &[Point]) {
-        unsafe {
-            Polygon(self.hdc, points.as_ptr() as _, points.len() as _);
-        }
-    }
-
-    pub fn pie(&self, rect: Rect, p1: Point, p2: Point) {
-        unsafe {
-            Pie(
-                self.hdc,
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
-                p1.x,
-                p1.y,
-                p2.x,
-                p2.y,
-            );
-        }
-    }
-
-    pub fn chord(&self, rect: Rect, p1: Point, p2: Point) {
-        unsafe {
-            Chord(
-                self.hdc,
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
-                p1.x,
-                p1.y,
-                p2.x,
-                p2.y,
-            );
-        }
-    }
-
-    pub fn round_rect(&self, rect: Rect, dx: u32, dy: u32) {
-        unsafe {
-            RoundRect(
-                self.hdc,
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
-                dx as _,
-                dy as _,
-            );
+            SelectObject(self.hdc(), self.pen.handle() as _);
         }
     }
 }
@@ -262,105 +200,6 @@ impl Context2D<'_> {
         self.brush = brush;
         unsafe {
             SelectObject(self.hdc, self.brush.handle() as _);
-        }
-    }
-
-    pub unsafe fn set_brush_uncatch(&mut self, brush: &Brush) {
-        unsafe {
-            SelectObject(self.hdc, brush.handle() as _);
-        }
-    }
-}
-
-impl Context2D<'_> {
-    pub fn begin_path(&self) {
-        unsafe {
-            BeginPath(self.hdc);
-        }
-    }
-
-    pub fn end_path(&self) {
-        unsafe {
-            EndPath(self.hdc);
-        }
-    }
-
-    pub fn move_to(&self, p: Point) {
-        unsafe {
-            MoveToEx(self.hdc, p.x, p.y, std::ptr::null_mut());
-        }
-    }
-
-    pub fn line_to(&self, p: Point) {
-        unsafe {
-            LineTo(self.hdc, p.x, p.y);
-        }
-    }
-
-    pub fn arc_to(&self, rect: Rect, p1: Point, p2: Point) {
-        unsafe {
-            ArcTo(
-                self.hdc,
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
-                p1.x,
-                p1.y,
-                p2.x,
-                p2.y,
-            );
-        }
-    }
-
-    pub fn poly_bezier_to(&self, points: &[Point]) {
-        unsafe {
-            PolyBezierTo(self.hdc, points.as_ptr() as _, points.len() as _);
-        }
-    }
-
-    pub fn polyline_to(&self, points: &[Point]) {
-        unsafe {
-            PolylineTo(self.hdc, points.as_ptr() as _, points.len() as _);
-        }
-    }
-
-    pub fn close_figure(&self) {
-        unsafe {
-            CloseFigure(self.hdc);
-        }
-    }
-}
-
-impl Context2D<'_> {
-    pub fn poly_polygon(&self, points: &[Point], count: &[u32]) {
-        unsafe {
-            PolyPolygon(
-                self.hdc,
-                points.as_ptr() as _,
-                count.as_ptr() as _,
-                count.len() as _,
-            );
-        }
-    }
-
-    pub fn poly_polyline(&self, points: &[Point], count: &[u32]) {
-        unsafe {
-            PolyPolyline(
-                self.hdc,
-                points.as_ptr() as _,
-                count.as_ptr() as _,
-                count.len() as _,
-            );
-        }
-    }
-}
-
-impl Context2D<'_> {
-    pub fn out_text(&self, text: &str, p: Point) {
-        let text: Vec<u16> = text.encode_utf16().collect();
-        unsafe {
-            TextOutW(self.hdc, p.x, p.y, text.as_ptr(), text.len() as _);
         }
     }
 }
@@ -454,10 +293,13 @@ impl Context2D<'_> {
             SelectObject(self.hdc, self.font.handle() as _);
         }
     }
-
-    pub unsafe fn set_font_uncatch(&mut self, font: &Font) {
-        unsafe {
-            SelectObject(self.hdc, font.handle() as _);
-        }
-    }
 }
+
+impl<T: Context2DData> DrawOpen for T {}
+impl<T: Context2DData> DrawClose for T {}
+impl<T: Context2DData> DrawPath for T {}
+impl<T: Context2DData> DrawPolygon for T {}
+impl<T: Context2DData> DrawText for T {}
+impl<T: Context2DData> PenSetter for T {}
+impl<T: Context2DData> BrushSetter for T {}
+impl<T: Context2DData> FontSetter for T {}

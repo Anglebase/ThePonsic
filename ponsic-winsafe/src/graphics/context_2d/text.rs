@@ -3,8 +3,6 @@ use winapi::{
     um::{wingdi::*, winuser::*},
 };
 
-use super::{Context2D, Rect};
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum DrawTextMode {
     Bottom,
@@ -33,7 +31,7 @@ pub enum DrawTextMode {
 }
 
 impl DrawTextMode {
-    fn into_sys(self) -> u32 {
+    pub(crate) fn into_sys(self) -> u32 {
         match self {
             DrawTextMode::Bottom => DT_BOTTOM,
             DrawTextMode::CalcRect => DT_CALCRECT,
@@ -58,23 +56,6 @@ impl DrawTextMode {
             DrawTextMode::VCenter => DT_VCENTER,
             DrawTextMode::WordBreak => DT_WORDBREAK,
             DrawTextMode::WordEllipsis => DT_WORD_ELLIPSIS,
-        }
-    }
-}
-
-impl Context2D<'_> {
-    pub fn draw_text(&self, text: &str, rect: &mut Rect, mode: &[DrawTextMode]) -> i32 {
-        let mut text_utf16: Vec<u16> = text.encode_utf16().collect();
-        let mut format = 0;
-        mode.iter().for_each(|m| format |= m.into_sys());
-        unsafe {
-            DrawTextW(
-                self.hdc,
-                text_utf16.as_mut_ptr() as _,
-                text_utf16.len() as _,
-                rect as *mut _ as _,
-                format,
-            )
         }
     }
 }
