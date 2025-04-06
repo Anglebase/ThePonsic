@@ -1,21 +1,21 @@
 use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
-fn process(Events { event, .. }: Events) -> Option<isize> {
+fn process(Events { event, .. }: Events) -> Return {
     match event {
         Event::Create => {
             // println!("Created");
-            Some(0)
+            Return::Finish
         }
         Event::Destroy => {
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         }
         Event::Other { msg, .. } => {
             let s = translate_msg(msg);
             if s == "UNDEFINED" {
                 println!("{}", msg);
             }
-            None
+            Return::Default
         }
         Event::SizeRange {
             min_track_width,
@@ -24,7 +24,7 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
         } => {
             *min_track_width = 640;
             *min_track_height = 480;
-            Some(0)
+            Return::Finish
         }
         Event::SizeChanging {
             type_: SizingSide::Unknown(a),
@@ -35,7 +35,7 @@ fn process(Events { event, .. }: Events) -> Option<isize> {
         }
         e @ _ => {
             println!("{:?}", e);
-            None
+            Return::Default
         }
     }
 }

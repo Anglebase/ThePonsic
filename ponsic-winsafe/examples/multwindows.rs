@@ -2,17 +2,17 @@ use std::thread::spawn;
 
 use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
-fn process(Events { event, window }: Events) -> Option<isize> {
+fn process(Events { event, window }: Events) -> Return {
     match event {
         Event::Destroy => {
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         }
-        Event::Other { .. } => None,
+        Event::Other { .. } => Return::Default,
         e @ _ => {
             println!("{}", window.title());
             println!("{:?}", e);
-            None
+            Return::Default
         }
     }
 }

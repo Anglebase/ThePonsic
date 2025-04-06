@@ -450,10 +450,9 @@ pub struct Events<'a> {
 
 /// 获取窗口所关联的数据
 ///
-/// # Note
-///
-/// 不建议直接使用此方法
-pub fn cast<T>(hwnd: WindowId) -> The<T> {
+/// # Safety
+/// 使用此方法时需要保证其泛型类型与窗口所绑定的数据类型一致，否则会引发不可预料的后果
+pub unsafe fn cast<T>(hwnd: WindowId) -> The<T> {
     let hwnd = unsafe { hwnd.handle() } as HWND;
     unsafe {
         let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA);
@@ -476,8 +475,8 @@ pub fn bind_when_create(hwnd: HWND, lparam: isize) {
 ///
 /// # Param
 /// 它的参数应是`<type>;<fn>`的格式，`<type>`指示窗口关联数据的类型，若无关联数据，则以`()`占位
-/// 传入的函数应符合 `impl Fn(Events) -> Option<isize>` (若无关联数据)
-/// 或 `impl Fn(Events,The<T>) -> Option<isize>`(若有关联数据) 并且无外部捕获的非全局变量
+/// 传入的函数应符合 `impl Fn(Events) -> Return` (若无关联数据)
+/// 或 `impl Fn(Events,The<T>) -> Return`(若有关联数据) 并且无外部捕获的非全局变量
 /// + 若该函数返回 `None` 则将后续处理交由默认处理过程函数
 /// + 若该函数返回 `Some(isize)` 则直接将内含值作为过程回调函数的返回值
 ///
@@ -495,10 +494,10 @@ macro_rules! wndproc {
                         event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     }
                 );
-                if let Some(__result) = __result {
-                    __result
-                } else {
-                    $crate::default_proc(__hwnd, __msg, __wparam, __lparam)
+                match __result {
+                    $crate::Return::Finish => 0,
+                    $crate::Return::Default => $crate::default_proc(__hwnd, __msg, __wparam, __lparam),
+                    $crate::Return::Data(data) => data,
                 }
             }
             unsafe { $crate::WndProc::from_raw(__inner_wndproc) }
@@ -519,12 +518,12 @@ macro_rules! wndproc {
                         window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
                         event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     },
-                    $crate::cast::<$t>(unsafe { $crate::WindowId::from_raw(__hwnd as _) }),
+                    unsafe { $crate::cast::<$t>($crate::WindowId::from_raw(__hwnd as _)) },
                 );
-                if let Some(__result) = __result {
-                    __result
-                } else {
-                    $crate::default_proc(__hwnd, __msg, __wparam, __lparam)
+                match __result {
+                    $crate::Return::Finish => 0,
+                    $crate::Return::Default => $crate::default_proc(__hwnd, __msg, __wparam, __lparam),
+                    $crate::Return::Data(data) => data,
                 }
             }
             unsafe { $crate::WndProc::from_raw(__inner_wndproc) }

@@ -14,15 +14,15 @@ fn paint(context: Context2D<'_>) {
     });
 }
 pub const BUTTON_DOWN: u32 = 0;
-fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Option<isize> {
+fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Return {
     match event {
         Event::Destroy => {
             println!("Button destroyed");
-            None
+            Return::Default
         }
         Event::Paint { context } => {
             paint(context.into());
-            Some(0)
+            Return::Finish
         }
         Event::Mouse { button, status, .. }
             if (ponsic::Button::Left, ButtonStatus::Down) == (button, status) =>
@@ -31,7 +31,7 @@ fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Option<is
                 let f = the.callback.as_mut();
                 (*f)(true);
             }
-            Some(0)
+            Return::Finish
         }
         Event::Mouse { button, status, .. }
             if (ponsic::Button::Left, ButtonStatus::Up) == (button, status) =>
@@ -40,9 +40,9 @@ fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Option<is
                 let f = the.callback.as_mut();
                 (*f)(false);
             }
-            Some(0)
+            Return::Finish
         }
-        _ => None,
+        _ => Return::Default,
     }
 }
 
@@ -73,7 +73,7 @@ impl Button {
             .bind(c)
             .build()?;
 
-        let the = cast::<Call>(button.id());
+        let the = unsafe { cast::<Call>(button.id()) };
 
         Ok(Self {
             parent: button,

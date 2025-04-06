@@ -1,4 +1,7 @@
-use winapi::{shared::minwindef::{LPARAM, UINT, WPARAM}, um::winuser::*};
+use winapi::{
+    shared::minwindef::{LPARAM, UINT, WPARAM},
+    um::winuser::*,
+};
 
 use crate::graphics::Context;
 
@@ -293,5 +296,12 @@ pub enum NoClient {
         pos: (i16, i16),
         status: ButtonStatus,
         at: CursorAt,
-    }
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub enum Return {
+    Finish,
+    Default,
+    Data(isize),
 }

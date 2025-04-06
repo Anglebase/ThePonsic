@@ -6,11 +6,11 @@ struct Data {
     b: String,
 }
 
-fn process(Events { event, .. }: Events, mut the: The<Data>) -> Option<isize> {
+fn process(Events { event, .. }: Events, mut the: The<Data>) -> Return {
     match event {
         Event::Create => {
             println!("Created");
-            Some(0)
+            Return::Finish
         }
         Event::Mouse { button, status, .. } => {
             if (button, status) == (Button::Left, ButtonStatus::Down) {
@@ -21,13 +21,13 @@ fn process(Events { event, .. }: Events, mut the: The<Data>) -> Option<isize> {
                     println!("The value is now {:?}", *r);
                 }
             }
-            Some(0)
+            Return::Finish
         }
         Event::Destroy => {
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         }
-        _ => None,
+        _ => Return::Default,
     }
 }
 

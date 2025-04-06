@@ -46,17 +46,17 @@ fn paint(context: FastContext2D) {
     );
 }
 
-fn process(Events { event, .. }: Events) -> Option<isize> {
+fn process(Events { event, .. }: Events) -> Return {
     match event {
         Event::Destroy => {
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         }
         Event::Paint { context } => {
             paint(context.into());
-            Some(0)
+            Return::Finish
         }
-        _ => None,
+        _ => Return::Default,
     }
 }
 

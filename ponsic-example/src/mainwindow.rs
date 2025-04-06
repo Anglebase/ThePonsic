@@ -4,20 +4,20 @@ use ponsic::{graphics::context_2d::Rect, *};
 
 use crate::button::BUTTON_DOWN;
 
-fn main_window_process(Events { event, .. }: Events) -> Option<isize> {
+fn main_window_process(Events { event, .. }: Events) -> Return {
     match event {
         Event::Destroy => {
             println!("MainWindow destroyed");
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         }
         Event::UserDef {
             msg: BUTTON_DOWN, ..
         } => {
             println!("MainWindow received message ButtonDown");
-            Some(0)
+            Return::Finish
         }
-        _ => None,
+        _ => Return::Default,
     }
 }
 

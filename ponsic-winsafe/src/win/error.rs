@@ -2,7 +2,7 @@ use winapi::um::errhandlingapi::GetLastError;
 
 use super::gen_by_py::translate_error;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SystemError {
     pub code: u32,
     pub message: &'static str,

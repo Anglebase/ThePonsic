@@ -17,15 +17,15 @@ mod tests {
     use crate::win::app::App;
     use crate::win::class::{Cursor, PreDefineClass};
     use crate::win::window::{WindowManager, WindowStyle};
-    use crate::wndproc;
+    use crate::{wndproc, Return};
 
-    fn proc(Events { event, .. }: Events) -> Option<isize> {
+    fn proc(Events { event, .. }: Events) -> Return {
         println!("{:?}", event);
         if let Event::Destroy = event {
             App::should_exit(0);
-            Some(0)
+            Return::Finish
         } else {
-            None
+            Return::Default
         }
     }
 
