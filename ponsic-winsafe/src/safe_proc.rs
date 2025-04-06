@@ -528,11 +528,9 @@ macro_rules! wndproc {
         {
             extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
                 if __msg == 0x2 /* WM_DESTROY */ {
-                    if let Some(__w) = unsafe { $crate::cast_warpper::<$t>(
+                    unsafe { $crate::cast_warpper_and_free::<$t>(
                         $crate::WindowId::from_raw(__hwnd as _)
-                    ) }{
-                        __w.free();
-                    };
+                    ) };
                 }
                 if __msg == 0x1 /* WM_CREATE */ {
                     $crate::bind_when_create(__hwnd, __lparam);

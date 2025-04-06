@@ -1,6 +1,6 @@
 use winapi::{
     shared::windef::HWND,
-    um::winuser::{GWLP_USERDATA, GetWindowLongPtrW},
+    um::winuser::{GWLP_USERDATA, GetWindowLongPtrW, SetWindowLongPtrW},
 };
 
 use crate::{The, WindowId};
@@ -41,13 +41,15 @@ pub(crate) fn make_ptr<T>(data: T) -> *mut WindowBindData<T> {
 ///
 /// # Note
 /// 此函数在宏`wndproc!(...)`中使用
-pub unsafe fn cast_warpper<T>(id: WindowId) -> Option<WindowBindData<T>> {
+pub unsafe fn cast_warpper_and_free<T>(id: WindowId) {
     let ptr =
         unsafe { GetWindowLongPtrW(id.handle() as HWND, GWLP_USERDATA) as *mut WindowBindData<T> };
-    if ptr.is_null() {
-        None
-    } else {
-        Some(*unsafe { Box::from_raw(ptr) })
+    if !ptr.is_null() {
+        let warpper = *unsafe { Box::from_raw(ptr) };
+        warpper.free();
+        unsafe {
+            SetWindowLongPtrW(id.handle() as HWND, GWLP_USERDATA, 0);
+        }
     }
 }
 
