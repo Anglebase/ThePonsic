@@ -301,6 +301,7 @@ pub enum NoClient {
         pos: (i16, i16),
         at: CursorAt,
     },
+    Leave,
 }
 
 /// 窗口过程函数返回值

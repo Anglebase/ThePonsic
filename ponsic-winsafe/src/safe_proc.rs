@@ -170,6 +170,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
         WM_CHAR => translate_text_input_event(wparam),
         WM_DESTROY => Event::Destroy,
         WM_CREATE => Event::Create,
+        WM_NCMOUSELEAVE => Event::NoClient(NoClient::Leave),
         WM_PAINT => Event::Paint {
             context: unsafe { Context::from_raw(*hwnd) },
         },
