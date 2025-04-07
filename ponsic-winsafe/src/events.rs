@@ -290,7 +290,10 @@ pub enum Event<'a> {
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum NoClient {
     /// 回调函数处理此消息应该返回 None，以确保执行默认行为
-    HitTest { x: i32, y: i32 },
+    HitTest {
+        x: i32,
+        y: i32,
+    },
     Mouse {
         button: Button,
         pos: (i16, i16),
@@ -302,12 +305,13 @@ pub enum NoClient {
         at: CursorAt,
     },
     Leave,
+    Create,
 }
 
 /// 窗口过程函数返回值
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum Return {
-    /// 指示处理已完成且要返回 0 
+    /// 指示处理已完成且要返回 0
     Finish,
     /// 指示后续处理应交由窗口的默认行为
     Default,

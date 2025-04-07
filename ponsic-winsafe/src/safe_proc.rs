@@ -171,6 +171,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
         WM_DESTROY => Event::Destroy,
         WM_CREATE => Event::Create,
         WM_NCMOUSELEAVE => Event::NoClient(NoClient::Leave),
+        WM_NCCREATE => Event::NoClient(NoClient::Create),
         WM_PAINT => Event::Paint {
             context: unsafe { Context::from_raw(*hwnd) },
         },

@@ -2,36 +2,10 @@ use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
 fn process(Events { event, .. }: Events) -> Return {
     match event {
-        Event::Create => {
-            // println!("Created");
-            Return::Finish
-        }
-        Event::Destroy => {
-            App::should_exit(0);
-            Return::Finish
-        }
         Event::Other { msg, .. } => {
             let s = translate_msg(msg);
-            if s == "WM_NCMOUSEMOVE" || s == "WM_NCMOUSELEAVE" {
-                println!("{}", s);
-            }
+            println!("{}", s);
             Return::Default
-        }
-        Event::SizeRange {
-            min_track_width,
-            min_track_height,
-            ..
-        } => {
-            *min_track_width = 640;
-            *min_track_height = 480;
-            Return::Finish
-        }
-        Event::SizeChanging {
-            type_: SizingSide::Unknown(a),
-            ..
-        } => {
-            println!("{}", a);
-            panic!("Unknown SizingSide");
         }
         e @ _ => {
             println!("{:?}", e);
