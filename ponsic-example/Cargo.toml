@@ -2,6 +2,9 @@
 name = "ponsic-example"
 version = "0.1.0"
 edition = "2024"
+description = "The examples of the `ponsic` crate."
+repository = "https://github.com/Anglebase/ThePonsic.git"
+license = "Apache-2.0"
 
 [dependencies]
 ponsic = { path = "../ponsic" }
