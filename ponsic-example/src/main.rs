@@ -1,7 +1,10 @@
+#[cfg(target_os = "windows")]
 use ponsic::{App, WindowManager, graphics::context_2d::Rect};
+#[cfg(target_os = "windows")]
 use ponsic_example::*;
 use std::error::Error;
 
+#[cfg(target_os = "windows")]
 fn main() -> Result<(), Box<dyn Error>> {
     let window = MainWindow::new(Rect::from_ps(100, 100, 800, 600), "Ponsic 应用程序")?;
 
@@ -15,3 +18,5 @@ fn main() -> Result<(), Box<dyn Error>> {
     while App::handle_event(true).unwrap_or(true) {}
     Ok(())
 }
+#[cfg(not(target_os = "windows"))]
+fn main(){}

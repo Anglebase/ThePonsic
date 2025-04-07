@@ -1,7 +1,9 @@
 use std::thread::spawn;
 
+#[cfg(target_os = "windows")]
 use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
+#[cfg(target_os = "windows")]
 fn process(Events { event, window }: Events) -> Return {
     match event {
         Event::Window(WindowEvent::Destroy) => {
@@ -17,6 +19,7 @@ fn process(Events { event, window }: Events) -> Return {
     }
 }
 
+#[cfg(target_os = "windows")]
 fn main() {
     let class = Registrar::new("MyApp")
         .set_cursor(Cursor::Arrow)
@@ -52,3 +55,5 @@ fn main() {
 
     join.join().unwrap();
 }
+#[cfg(not(target_os = "windows"))]
+fn main(){}

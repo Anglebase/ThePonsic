@@ -1,5 +1,7 @@
+#[cfg(target_os = "windows")]
 use ponsic_winsafe::{graphics::context_2d::*, wndproc, *};
 
+#[cfg(target_os = "windows")]
 fn paint(context: FastContext2D) {
     context.line(Point::from_xy(10, 10), Point::from_xy(200, 200));
     let points = [
@@ -46,6 +48,7 @@ fn paint(context: FastContext2D) {
     );
 }
 
+#[cfg(target_os = "windows")]
 fn process(Events { event, .. }: Events) -> Return {
     match event {
         Event::Window(WindowEvent::Destroy) => {
@@ -60,6 +63,7 @@ fn process(Events { event, .. }: Events) -> Return {
     }
 }
 
+#[cfg(target_os = "windows")]
 fn main() {
     let class = Registrar::new("MyApp")
         .set_cursor(Cursor::Arrow)
@@ -77,3 +81,5 @@ fn main() {
     window.show();
     while App::handle_event(true).unwrap_or(true) {}
 }
+#[cfg(not(target_os = "windows"))]
+fn main(){}

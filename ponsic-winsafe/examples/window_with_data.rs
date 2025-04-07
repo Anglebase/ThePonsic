@@ -1,11 +1,14 @@
+#[cfg(target_os = "windows")]
 use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
+#[cfg(target_os = "windows")]
 #[derive(Debug)]
 struct Data {
     a: u32,
     b: String,
 }
 
+#[cfg(target_os = "windows")]
 fn process(Events { event, .. }: Events, mut the: The<Data>) -> Return {
     match event {
         Event::Window(WindowEvent::Create) => {
@@ -31,6 +34,7 @@ fn process(Events { event, .. }: Events, mut the: The<Data>) -> Return {
     }
 }
 
+#[cfg(target_os = "windows")]
 fn main() {
     let class = Registrar::new("MyApp")
         .set_cursor(Cursor::Arrow)
@@ -51,3 +55,6 @@ fn main() {
     window.show();
     while App::handle_event(true).unwrap_or(true) {}
 }
+
+#[cfg(not(target_os = "windows"))]
+fn main(){}
