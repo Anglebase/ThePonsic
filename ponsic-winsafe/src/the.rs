@@ -1,4 +1,5 @@
 use std::{
+    any::Any,
     fmt::{Debug, Display},
     ops::{Deref, DerefMut},
     ptr::null,
@@ -14,9 +15,16 @@ pub struct The<T> {
 
 impl<T> Debug for The<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let type_name = format!("The<{}>", std::any::type_name::<T>());
         match self.the {
-            Some(_) => f.debug_struct("The<T>").field("the", &"Some(...)").finish(),
-            None => f.debug_struct("The<T>").field("the", &"None").finish(),
+            Some(_) => f
+                .debug_struct(&type_name)
+                .field("the", &Option::<&'static dyn Any>::Some(&0))
+                .finish(),
+            None => f
+                .debug_struct(&type_name)
+                .field("the", &Option::<&'static dyn Any>::Some(&0))
+                .finish(),
         }
     }
 }
