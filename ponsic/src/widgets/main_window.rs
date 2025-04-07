@@ -39,7 +39,7 @@ impl MainWindow {
         let data = MainWindowData {};
 
         let window = class
-            .window_builder(rect)
+            .make_window(rect)
             .set_title(title)
             .set_style(&[WindowStyle::OverlappedWindow])
             .bind_data(data)

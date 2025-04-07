@@ -64,7 +64,7 @@ impl Button {
         };
 
         let button = BUTTON_CLASS
-            .window_builder(rect)
+            .make_window(rect)
             .set_parent(parent)
             .set_style(&[WindowStyle::Child])
             .set_title("Button")

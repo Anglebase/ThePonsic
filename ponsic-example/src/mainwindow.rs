@@ -33,7 +33,7 @@ pub struct MainWindow {}
 impl MainWindow {
     pub fn new(rect: Rect, title: &str) -> Result<Self, SystemError> {
         let window = MAINWINDOW_CLASS
-            .window_builder(rect)
+            .make_window(rect)
             .set_title(title)
             .set_style(&[WindowStyle::OverlappedWindow])
             .build()?;

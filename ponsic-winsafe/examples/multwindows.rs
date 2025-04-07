@@ -25,7 +25,7 @@ fn main() {
         .unwrap();
 
     let window = class
-        .window_builder(Rect::from_ps(100, 100, 800, 600))
+        .make_window(Rect::from_ps(100, 100, 800, 600))
         .set_title("MyApp")
         .set_style(&[WindowStyle::OverlappedWindow])
         .build()
@@ -36,7 +36,7 @@ fn main() {
 
     let join = spawn(move || {
         let window = class
-            .window_builder(Rect::from_ps(100, 100, 400, 300))
+            .make_window(Rect::from_ps(100, 100, 400, 300))
             .set_title("MyApp2")
             .set_parent(id)
             .set_style(&[WindowStyle::OverlappedWindow])

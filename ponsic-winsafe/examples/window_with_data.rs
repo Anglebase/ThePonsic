@@ -39,7 +39,7 @@ fn main() {
         .unwrap();
 
     let window = class
-        .window_builder(Rect::from_ps(100, 100, 800, 600))
+        .make_window(Rect::from_ps(100, 100, 800, 600))
         .set_title("MyApp")
         .set_style(&[WindowStyle::OverlappedWindow])
         .bind_data(Data {

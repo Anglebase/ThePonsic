@@ -45,6 +45,7 @@ pub enum Cursor {
     Person,
 }
 
+/// 窗口类构建器
 #[derive(Debug, Clone)]
 pub struct ClassError {
     message: String,
@@ -58,6 +59,7 @@ impl std::fmt::Display for ClassError {
 
 impl std::error::Error for ClassError {}
 
+/// 窗口类
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct Class {
     name: String,
@@ -68,7 +70,7 @@ impl Class {
         Self { name: name.into() }
     }
 
-    pub fn window_builder(&self, rect: Rect) -> window::Builder {
+    pub fn make_window(&self, rect: Rect) -> window::Builder {
         window::Builder::new(
             &self.name,
             (rect.x(), rect.y(), rect.width(), rect.height()),

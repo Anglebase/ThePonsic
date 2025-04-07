@@ -177,6 +177,7 @@ pub trait WindowManager {
         }
     }
 
+    /// 指示窗口应该被重新绘制
     fn redraw(&self) {
         unsafe {
             RedrawWindow(
@@ -489,7 +490,7 @@ mod tests {
         let class = class::Registrar::new("window_builder_test").build()?;
 
         let window = class
-            .window_builder(Rect::from_ps(100, 100, 800, 600))
+            .make_window(Rect::from_ps(100, 100, 800, 600))
             .set_title("Test")
             .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border]);
 

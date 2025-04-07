@@ -2,6 +2,7 @@ use winapi::um::errhandlingapi::GetLastError;
 
 use super::gen_by_py::translate_error;
 
+/// WIN32 错误
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SystemError {
     pub code: u32,
@@ -32,9 +33,4 @@ pub fn check_error() -> Result<(), SystemError> {
         return Err(SystemError::new(code));
     }
     Ok(())
-}
-
-/// 断言当前上下文中的没有发生错误
-pub fn assert_no_error() {
-    check_error().unwrap();
 }

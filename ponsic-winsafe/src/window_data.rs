@@ -55,8 +55,8 @@ pub unsafe fn cast_warpper_and_free<T>(id: WindowId) {
 
 /// 获取窗口所关联的数据
 ///
-/// # Safety
-/// 使用此方法时需要保证其泛型类型与窗口所绑定的数据类型一致，否则会引发不可预料的后果
+/// # Panic
+/// 若指定目标类型与窗口绑定数据类型不一致，将导致 `Panic`
 pub fn assert_cast<T>(hwnd: WindowId) -> The<T> {
     let hwnd = unsafe { hwnd.handle() } as HWND;
     unsafe {
@@ -68,7 +68,7 @@ pub fn assert_cast<T>(hwnd: WindowId) -> The<T> {
         assert_eq!(
             dref.type_name,
             std::any::type_name::<T>(),
-            "类型断言失败: 过程回调函数与窗口构建器各自指定的窗口绑定类型类型不一致"
+            "类型断言失败: 源类型与目标类型不一致"
         );
         The::from_raw(dref.data_ptr as _)
     }

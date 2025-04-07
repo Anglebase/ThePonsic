@@ -96,7 +96,7 @@ impl PushButton {
             callback: Vec::new(),
         };
         let window = class
-            .window_builder(rect)
+            .make_window(rect)
             .set_title(text)
             .set_parent(parent.id())
             .set_style(&[WindowStyle::Child])
