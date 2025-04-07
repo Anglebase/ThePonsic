@@ -86,20 +86,6 @@ pub struct WindowId {
     handle: usize,
 }
 
-#[derive(Debug)]
-pub struct WindowError {
-    message: String,
-    code: u32,
-}
-
-impl std::fmt::Display for WindowError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "[WindowError {}: {}]", self.code, self.message)
-    }
-}
-
-impl std::error::Error for WindowError {}
-
 impl Window {
     fn new(handle: HWND) -> Self {
         Self { handle }

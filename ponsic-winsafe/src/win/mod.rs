@@ -17,7 +17,7 @@ mod tests {
     use crate::win::app::App;
     use crate::win::class::{Cursor, PreDefineClass};
     use crate::win::window::{WindowManager, WindowStyle};
-    use crate::{wndproc, Return, WindowEvent};
+    use crate::{Return, WindowEvent, wndproc};
 
     fn proc(Events { event, .. }: Events) -> Return {
         println!("{:?}", event);

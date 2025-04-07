@@ -45,20 +45,6 @@ pub enum Cursor {
     Person,
 }
 
-/// 窗口类构建器
-#[derive(Debug, Clone)]
-pub struct ClassError {
-    message: String,
-}
-
-impl std::fmt::Display for ClassError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "[ClassError: {}]", self.message)
-    }
-}
-
-impl std::error::Error for ClassError {}
-
 /// 窗口类
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct Class {
