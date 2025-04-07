@@ -1,3 +1,4 @@
+#[allow(unused)]
 use std::thread::spawn;
 
 #[cfg(target_os = "windows")]

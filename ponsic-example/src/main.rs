@@ -2,6 +2,7 @@
 use ponsic::{App, WindowManager, graphics::context_2d::Rect};
 #[cfg(target_os = "windows")]
 use ponsic_example::*;
+#[allow(unused)]
 use std::error::Error;
 
 #[cfg(target_os = "windows")]
