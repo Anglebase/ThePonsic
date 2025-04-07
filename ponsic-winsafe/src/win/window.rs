@@ -1,11 +1,7 @@
-use std::any::Any;
 use std::fmt::Debug;
-use std::ops::{Index, IndexMut};
 use std::ptr::{null, null_mut};
-use winapi::shared::minwindef::BOOL;
 use winapi::shared::windef::*;
 use winapi::um::libloaderapi::GetModuleHandleW;
-use winapi::um::winnt::{HANDLE, LPCWSTR};
 use winapi::um::winuser::*;
 
 use crate::{SystemError, check_error, make_ptr};
@@ -71,11 +67,15 @@ pub enum WindowStyle {
     VScroll,
 }
 
+/// 窗口实例
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Window {
     handle: HWND,
 }
 
+/// 窗口句柄
+/// 
+/// 若要在线程间传递窗口标识，应使用 `WindowId`
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct WindowHandle {
     pub(crate) handle: HWND,
@@ -164,6 +164,7 @@ pub trait WindowManager {
         }
     }
 
+    /// 获取窗口父窗口的句柄
     fn parent(&self) -> Option<WindowHandle> {
         let handle = self.get_handle() as HWND;
         unsafe {
@@ -172,59 +173,6 @@ pub trait WindowManager {
                 None
             } else {
                 Some(WindowHandle { handle })
-            }
-        }
-    }
-
-    fn insert<T: 'static>(&self, name: &str, value: T) -> Option<Box<dyn Any>> {
-        let name: Vec<u16> = name.encode_utf16().chain(Some(0)).collect();
-        let mut result = None;
-        unsafe {
-            let prop: HANDLE = GetPropW(self.get_handle() as _, name.as_ptr());
-            if !prop.is_null() {
-                result = Some(Box::from_raw(prop as *mut Box<dyn Any>));
-            }
-            let value: Box<Box<dyn Any>> = Box::new(Box::new(value));
-            let prop = Box::into_raw(value);
-            SetPropW(self.get_handle() as _, name.as_ptr(), prop as _);
-        }
-        result.map(|v| v as Box<dyn Any>)
-    }
-
-    fn get<'a>(&'a self, name: &str) -> Option<&'a dyn Any> {
-        let name: Vec<u16> = name.encode_utf16().chain(Some(0)).collect();
-        unsafe {
-            let prop: HANDLE = GetPropW(self.get_handle() as _, name.as_ptr());
-            let prop = prop as *mut Box<dyn Any>;
-            if let Some(val) = prop.as_ref() {
-                Some(val.as_ref())
-            } else {
-                None
-            }
-        }
-    }
-
-    fn get_mut<'a>(&'a mut self, name: &str) -> Option<&'a mut dyn Any> {
-        let name: Vec<u16> = name.encode_utf16().chain(Some(0)).collect();
-        unsafe {
-            let prop: HANDLE = GetPropW(self.get_handle() as _, name.as_ptr());
-            let prop = prop as *mut Box<dyn Any>;
-            if let Some(val) = prop.as_mut() {
-                Some(val.as_mut())
-            } else {
-                None
-            }
-        }
-    }
-
-    fn remove(&mut self, name: &str) -> Option<Box<dyn Any>> {
-        let name: Vec<u16> = name.encode_utf16().chain(Some(0)).collect();
-        unsafe {
-            let prop: HANDLE = RemovePropW(self.get_handle() as _, name.as_ptr());
-            if !prop.is_null() {
-                Some(Box::from_raw(prop as *mut Box<dyn Any>) as Box<dyn Any>)
-            } else {
-                None
             }
         }
     }
@@ -280,38 +228,6 @@ impl WindowManager for Window {
 impl WindowManager for WindowHandle {
     fn get_handle(&self) -> usize {
         self.handle as usize
-    }
-}
-
-impl Index<&str> for Window {
-    type Output = dyn Any;
-
-    fn index(&self, index: &str) -> &Self::Output {
-        self.get(index).unwrap()
-    }
-}
-
-impl IndexMut<&str> for Window {
-    fn index_mut(&mut self, index: &str) -> &mut Self::Output {
-        self.get_mut(index).unwrap()
-    }
-}
-
-impl Drop for Window {
-    fn drop(&mut self) {
-        unsafe {
-            EnumPropsW(self.handle, Some(enum_prop));
-        }
-    }
-}
-
-unsafe extern "system" fn enum_prop(handle: HWND, prop: LPCWSTR, _: HANDLE) -> BOOL {
-    let data = unsafe { RemovePropW(handle, prop) };
-    if !data.is_null() {
-        let _ = unsafe { Box::from_raw(data as *mut Box<dyn Any>) };
-        true as _
-    } else {
-        false as _
     }
 }
 
@@ -579,27 +495,6 @@ mod tests {
 
         #[allow(unused_variables)]
         let window = window.build()?;
-
-        Ok(())
-    }
-
-    #[test]
-    fn window_prop_test() -> Result<()> {
-        let class = class::Registrar::new("window_prop_test").build()?;
-
-        let window = class
-            .window_builder(Rect::from_ps(100, 100, 800, 600))
-            .set_title("Test")
-            .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border])
-            .build()?;
-        window.insert("UserData", 42);
-        window.insert("Hello", "World");
-
-        let v1 = window.get("UserData").unwrap();
-        let v2 = window.get("Hello").unwrap();
-
-        assert_eq!(*v1.downcast_ref::<i32>().unwrap(), 42);
-        assert_eq!(*v2.downcast_ref::<&str>().unwrap(), "World");
 
         Ok(())
     }
