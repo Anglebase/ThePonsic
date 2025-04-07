@@ -11,7 +11,7 @@ default-target = "x86_64-pc-windows-msvc"
 targets = ["aarch64-pc-windows-msvc", "i686-pc-windows-msvc", "x86_64-pc-windows-msvc"]
 
 [target.'cfg(windows)'.dependencies]
-ponsic-winsafe = { path = "../ponsic-winsafe" }
+ponsic-winsafe = "0.1.0"
 
 [dependencies]
 inherits = "0.1.2"
