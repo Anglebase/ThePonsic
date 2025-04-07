@@ -12,6 +12,7 @@ macro_rules! ponsic_name {
     };
 }
 
+/// 获取由 `lazy_static!` 定义的类
 #[macro_export]
 macro_rules! get_class {
     ($e:expr) => {

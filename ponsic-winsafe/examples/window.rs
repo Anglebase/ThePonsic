@@ -9,7 +9,12 @@ fn process(Events { event, .. }: Events) -> Return {
         }
         e @ _ => {
             println!("{:?}", e);
-            Return::Default
+            if let Event::Window(WindowEvent::Destroy) = e {
+                App::should_exit(0);
+                Return::Finish
+            } else {
+                Return::Default
+            }
         }
     }
 }
