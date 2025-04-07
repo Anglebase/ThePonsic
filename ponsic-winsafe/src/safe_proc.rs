@@ -168,16 +168,17 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
         WM_MOUSEMOVE => translate_mouse_move_event(wparam, lparam),
         WM_MOUSEWHEEL => translate_mouse_wheel_event(wparam, lparam),
         WM_CHAR => translate_text_input_event(wparam),
-        WM_DESTROY => Event::Destroy,
-        WM_CREATE => Event::Create,
+        WM_DESTROY => Event::Window(WindowEvent::Destroy),
+        WM_CREATE => Event::Window(WindowEvent::Create),
         WM_NCMOUSELEAVE => Event::NoClient(NoClient::Leave),
         WM_NCCREATE => Event::NoClient(NoClient::Create),
+        WM_CLOSE => Event::Window(WindowEvent::Close),
         WM_PAINT => Event::Paint {
             context: unsafe { Context::from_raw(*hwnd) },
         },
         WM_GETMINMAXINFO => {
             let lparam = unsafe { (lparam as *mut MINMAXINFO).as_mut().unwrap() };
-            Event::SizeRange {
+            Event::Window(WindowEvent::SizeRange {
                 max_width: &mut lparam.ptMaxSize.x,
                 max_height: &mut lparam.ptMaxSize.y,
                 max_left: &mut lparam.ptMaxPosition.x,
@@ -186,12 +187,12 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
                 min_track_height: &mut lparam.ptMinTrackSize.y,
                 max_track_width: &mut lparam.ptMaxTrackSize.x,
                 max_track_height: &mut lparam.ptMaxTrackSize.y,
-            }
+            })
         }
         WM_SIZE => translate_window_size(wparam, lparam),
         WM_SIZING => {
             let lparam = unsafe { (lparam as *mut RECT).as_mut().unwrap() };
-            Event::SizeChanging {
+            Event::Window(WindowEvent::SizeChanging {
                 ref_rect: RefRect {
                     left: &mut lparam.left,
                     top: &mut lparam.top,
@@ -199,15 +200,15 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
                     bottom: &mut lparam.bottom,
                 },
                 type_: wparam_to_size_side(wparam),
-            }
+            })
         }
         WM_NCHITTEST => translate_nc_hit_test(lparam),
         WM_NCMOUSEMOVE => translate_nc_mouse_move_event(wparam, lparam),
-        _ if msg >= WM_USER => Event::UserDef {
-            msg: msg - WM_USER,
+        _ if msg >= WM_USER => Event::Window(WindowEvent::UserDef {
+            msg,
             wparam,
             lparam,
-        },
+        }),
         _ => Event::Other {
             msg,
             wparam,
@@ -352,11 +353,11 @@ const fn translate_window_size(w_param: WPARAM, l_param: LPARAM) -> Event<'stati
         SIZE_RESTORED => SizeChangeType::Restore,
         param @ _ => SizeChangeType::Unknown(param),
     };
-    Event::SizeChanged {
+    Event::Window(WindowEvent::SizeChanged {
         width,
         height,
         type_,
-    }
+    })
 }
 
 const fn translate_mouse_button(msg: UINT, w_param: WPARAM, l_param: LPARAM) -> Event<'static> {

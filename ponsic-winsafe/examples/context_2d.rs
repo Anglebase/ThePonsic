@@ -63,7 +63,7 @@ fn paint(mut context: Context2D<'_>) {
 
 fn process(Events { event, .. }: Events) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             App::should_exit(0);
             Return::Finish
         }

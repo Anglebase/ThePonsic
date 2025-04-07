@@ -4,7 +4,7 @@ use ponsic_winsafe::{graphics::context_2d::Rect, wndproc, *};
 
 fn process(Events { event, window }: Events) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             App::should_exit(0);
             Return::Finish
         }

@@ -8,7 +8,7 @@ struct Data {
 
 fn process(Events { event, .. }: Events, mut the: The<Data>) -> Return {
     match event {
-        Event::Create => {
+        Event::Window(WindowEvent::Create) => {
             println!("Created");
             Return::Finish
         }
@@ -23,7 +23,7 @@ fn process(Events { event, .. }: Events, mut the: The<Data>) -> Return {
             }
             Return::Finish
         }
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             App::should_exit(0);
             Return::Finish
         }

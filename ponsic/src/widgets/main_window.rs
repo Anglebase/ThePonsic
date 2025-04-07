@@ -1,15 +1,14 @@
 use inherits::inherits;
 use lazy_static::lazy_static;
 use ponsic_winsafe::{
-    App, Class, Event, Events, Registrar, Return, SystemError, The, Window, WindowManager,
-    WindowStyle, assert_cast, graphics::context_2d::Rect, wndproc,
+    assert_cast, graphics::context_2d::Rect, wndproc, App, Class, Event, Events, Registrar, Return, SystemError, The, Window, WindowEvent, WindowManager, WindowStyle
 };
 
 use crate::{get_class, ponsic_name};
 
 fn main_window_process(Events { event, .. }: Events, _data: The<MainWindowData>) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             App::should_exit(0);
             Return::Finish
         }

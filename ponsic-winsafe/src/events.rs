@@ -253,17 +253,27 @@ pub enum Event<'a> {
     Paint {
         context: Context,
     },
-    Destroy,
-    Create,
-    UserDef {
-        msg: u32,
-        wparam: usize,
-        lparam: isize,
-    },
+    NoClient(NoClient),
+    Window(WindowEvent<'a>),
     Other {
         msg: UINT,
         wparam: WPARAM,
         lparam: LPARAM,
+    },
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
+pub enum WindowEvent<'a> {
+    Destroy,
+    Create,
+    Close,
+    Move {
+        pos: (i32, i32),
+    },
+    UserDef {
+        msg: u32,
+        wparam: usize,
+        lparam: isize,
     },
     SizeRange {
         max_width: &'a mut i32,
@@ -284,7 +294,6 @@ pub enum Event<'a> {
         ref_rect: RefRect<'a>,
         type_: SizingSide,
     },
-    NoClient(NoClient),
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]

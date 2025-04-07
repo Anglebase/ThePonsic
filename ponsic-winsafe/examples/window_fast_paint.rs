@@ -48,7 +48,7 @@ fn paint(context: FastContext2D) {
 
 fn process(Events { event, .. }: Events) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             App::should_exit(0);
             Return::Finish
         }
