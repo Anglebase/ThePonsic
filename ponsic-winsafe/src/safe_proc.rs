@@ -202,6 +202,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
                 type_: wparam_to_size_side(wparam),
             })
         }
+        WM_MOVE => translate_window_move(lparam),
         WM_NCHITTEST => translate_nc_hit_test(lparam),
         WM_NCMOUSEMOVE => translate_nc_mouse_move_event(wparam, lparam),
         _ if msg >= WM_USER => Event::Window(WindowEvent::UserDef {
@@ -215,6 +216,11 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
             lparam,
         },
     }
+}
+
+const fn translate_window_move(lparam: LPARAM) -> Event<'static> {
+    let pos = l_param_to_pos(lparam);
+    Event::Window(WindowEvent::Move { pos })
 }
 
 const fn translate_nc_mouse_move_event(wparam: WPARAM, lparam: LPARAM) -> Event<'static> {

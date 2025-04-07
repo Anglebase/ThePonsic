@@ -4,14 +4,15 @@ use crate::button::BUTTON_DOWN;
 
 fn main_window_process(Events { event, .. }: Events) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             println!("MainWindow destroyed");
             App::should_exit(0);
             Return::Finish
         }
-        Event::UserDef {
-            msg: BUTTON_DOWN, ..
-        } => {
+        Event::Window(WindowEvent::UserDef {
+            msg: BUTTON_DOWN,
+            ..
+        }) => {
             println!("MainWindow received message ButtonDown");
             Return::Finish
         }

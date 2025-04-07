@@ -14,7 +14,7 @@ fn paint(context: Context2D<'_>) {
 pub const BUTTON_DOWN: u32 = 0;
 fn button_process(Events { event, .. }: Events, mut the: The<Call>) -> Return {
     match event {
-        Event::Destroy => {
+        Event::Window(WindowEvent::Destroy) => {
             println!("Button destroyed");
             Return::Default
         }
