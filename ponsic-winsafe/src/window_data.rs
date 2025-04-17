@@ -3,7 +3,7 @@ use winapi::{
     um::winuser::{GWLP_USERDATA, GetWindowLongPtrW, SetWindowLongPtrW},
 };
 
-use crate::{The, WindowId};
+use crate::{The, Window, WindowId, WindowManager};
 
 /// 窗口绑定数据
 pub struct WindowBindData<T> {
@@ -41,6 +41,7 @@ pub(crate) fn make_ptr<T>(data: T) -> *mut WindowBindData<T> {
 ///
 /// # Note
 /// 此函数在宏`wndproc!(...)`中使用
+#[deprecated(since = "0.1.0", note = "不应显式调用此方法")]
 pub unsafe fn cast_warpper_and_free<T>(id: WindowId) {
     let ptr =
         unsafe { GetWindowLongPtrW(id.handle() as HWND, GWLP_USERDATA) as *mut WindowBindData<T> };
@@ -57,6 +58,7 @@ pub unsafe fn cast_warpper_and_free<T>(id: WindowId) {
 ///
 /// # Panic
 /// 若指定目标类型与窗口绑定数据类型不一致，将导致 `Panic`
+#[deprecated(since = "0.1.0", note = "不应显式调用此方法，请使用 Window::data 方法")]
 pub fn assert_cast<T>(hwnd: WindowId) -> The<T> {
     let hwnd = unsafe { hwnd.handle() } as HWND;
     unsafe {
@@ -71,5 +73,13 @@ pub fn assert_cast<T>(hwnd: WindowId) -> The<T> {
             "类型断言失败: 源类型与目标类型不一致"
         );
         The::from_raw(dref.data_ptr as _)
+    }
+}
+
+impl Window {
+    /// 获取窗口所关联数据的访问器
+    pub fn data<T>(&self) -> The<T> {
+        #[allow(deprecated)]
+        assert_cast(self.handle().id())
     }
 }

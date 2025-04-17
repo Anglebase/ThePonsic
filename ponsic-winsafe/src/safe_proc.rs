@@ -490,6 +490,7 @@ pub struct Events<'a> {
 }
 
 /// 此函数在宏 `wndproc!(...)` 中使用，不应直接调用
+#[deprecated(since = "0.1.0", note = "不应显式调用此方法")]
 pub fn bind_when_create(hwnd: HWND, lparam: isize) {
     let lparam = lparam as *const CREATESTRUCTW;
     unsafe {
@@ -503,7 +504,7 @@ pub fn bind_when_create(hwnd: HWND, lparam: isize) {
 /// 生成窗口处理过程函数宏
 ///
 /// # Param
-/// 它的参数应是`<type>;<fn>`的格式，`<type>`指示窗口关联数据的类型，若无关联数据，则以`()`占位
+/// 它的参数应是`<type>;<fn>`的格式，`<type>`指示窗口关联数据的类型，若无关联数据，则以`()`占位；
 /// 传入的函数应符合 `impl Fn(Events) -> Return` (若无关联数据)
 /// 或 `impl Fn(Events,The<T>) -> Return`(若有关联数据) 并且无外部捕获的非全局变量
 ///
@@ -534,11 +535,13 @@ macro_rules! wndproc {
         {
             extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
                 if __msg == 0x2 /* WM_DESTROY */ {
+                    #[allow(deprecated)]
                     unsafe { $crate::cast_warpper_and_free::<$t>(
                         $crate::WindowId::from_raw(__hwnd as _)
                     ) };
                 }
                 if __msg == 0x1 /* WM_CREATE */ {
+                    #[allow(deprecated)]
                     $crate::bind_when_create(__hwnd, __lparam);
                 }
                 let __f = $($f)*;
@@ -547,6 +550,7 @@ macro_rules! wndproc {
                         window: unsafe{ $crate::WindowHandle::from_raw(__hwnd) },
                         event: $crate::translate(&__hwnd, __msg, __wparam, __lparam),
                     },
+                    #[allow(deprecated)]
                     unsafe { $crate::assert_cast::<$t>($crate::WindowId::from_raw(__hwnd as _)) },
                 );
                 match __result {
