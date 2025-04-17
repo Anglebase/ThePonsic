@@ -3,7 +3,7 @@ mod color;
 mod pen;
 mod text;
 mod traits;
-mod types;
+
 use std::fmt::Debug;
 pub use traits::*;
 
@@ -12,7 +12,6 @@ pub use brush::*;
 pub use color::*;
 pub use pen::*;
 pub use text::*;
-pub use types::*;
 use winapi::{
     shared::windef::{HDC, HWND},
     um::{wingdi::*, winuser::*},

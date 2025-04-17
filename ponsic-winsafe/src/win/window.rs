@@ -74,7 +74,7 @@ pub struct Window {
 }
 
 /// 窗口句柄
-/// 
+///
 /// 若要在线程间传递窗口标识，应使用 `WindowId`
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct WindowHandle {
@@ -469,14 +469,15 @@ impl Builder {
 #[cfg(test)]
 mod tests {
     use super::{super::Result, *};
-    use crate::{graphics::context_2d::Rect, win::class};
+    use crate::win::class;
+    use ponsic_types::{Point, Recti as Rect, Size};
 
     #[test]
     fn window_builder_test() -> Result<()> {
         let class = class::Registrar::new("window_builder_test").build()?;
 
         let window = class
-            .make_window(Rect::from_ps(100, 100, 800, 600))
+            .make_window(Rect::from((Point::new(100, 100), Size::new(800, 600))))
             .set_title("Test")
             .set_style(&[WindowStyle::OverlappedWindow, WindowStyle::Border]);
 

@@ -1,5 +1,5 @@
 use crate::check_error;
-use crate::graphics::context_2d::Rect;
+use ponsic_types::Recti as Rect;
 use crate::safe_proc::WndProc;
 use crate::win::window;
 use std::ptr::null_mut;
@@ -59,7 +59,7 @@ impl Class {
     pub fn make_window(&self, rect: Rect) -> window::Builder {
         window::Builder::new(
             &self.name,
-            (rect.x(), rect.y(), rect.width(), rect.height()),
+            (rect.left(), rect.top(), rect.width() as _, rect.height() as _),
         )
     }
 }

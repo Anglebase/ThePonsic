@@ -1,4 +1,6 @@
-use super::{Brush, Color, DrawTextMode, Font, Pen, Point, Rect};
+use ponsic_types::Pointi as Point;
+use ponsic_types::Recti as Rect;
+use super::{Brush, Color, DrawTextMode, Font, Pen};
 use std::ptr::null_mut;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -29,10 +31,10 @@ pub trait DrawOpen: Context2DData {
         unsafe {
             Arc(
                 self.hdc(),
-                border.left,
-                border.top,
-                border.right,
-                border.bottom,
+                border.left(),
+                border.top(),
+                border.right(),
+                border.bottom(),
                 p1.x,
                 p1.y,
                 p2.x,
@@ -57,13 +59,13 @@ pub trait DrawOpen: Context2DData {
 pub trait DrawClose: Context2DData {
     fn rectangle(&self, rect: Rect) {
         unsafe {
-            Rectangle(self.hdc(), rect.left, rect.top, rect.right, rect.bottom);
+            Rectangle(self.hdc(), rect.left(), rect.top(), rect.right(), rect.bottom());
         }
     }
 
     fn ellipse(&self, rect: Rect) {
         unsafe {
-            Ellipse(self.hdc(), rect.left, rect.top, rect.right, rect.bottom);
+            Ellipse(self.hdc(), rect.left(), rect.top(), rect.right(), rect.bottom());
         }
     }
 
@@ -77,10 +79,10 @@ pub trait DrawClose: Context2DData {
         unsafe {
             Pie(
                 self.hdc(),
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
                 p1.x,
                 p1.y,
                 p2.x,
@@ -93,10 +95,10 @@ pub trait DrawClose: Context2DData {
         unsafe {
             Chord(
                 self.hdc(),
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
                 p1.x,
                 p1.y,
                 p2.x,
@@ -109,10 +111,10 @@ pub trait DrawClose: Context2DData {
         unsafe {
             RoundRect(
                 self.hdc(),
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
                 dx as _,
                 dy as _,
             );
@@ -149,10 +151,10 @@ pub trait DrawPath: Context2DData {
         unsafe {
             ArcTo(
                 self.hdc(),
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom,
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
                 p1.x,
                 p1.y,
                 p2.x,
