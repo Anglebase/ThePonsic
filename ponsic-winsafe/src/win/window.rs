@@ -108,6 +108,7 @@ pub trait WindowManager {
         }
     }
 
+    /// 显示窗口
     fn show(&self) {
         let handle = self.get_handle() as HWND;
         unsafe {
@@ -210,12 +211,14 @@ pub trait WindowManager {
         }
     }
 
+    /// 获取窗口所在的矩形区域坐标
     fn get_rect(&self) -> Recti {
         let mut rect = unsafe { std::mem::zeroed::<RECT>() };
         unsafe { GetWindowRect(self.get_handle() as _, &mut rect) };
         Recti::new(rect.left, rect.top, rect.right, rect.bottom)
     }
 
+    /// 获取窗口客户区矩形区域坐标
     fn get_client_rect(&self) -> Recti {
         let mut rect = unsafe { std::mem::zeroed::<RECT>() };
         unsafe { GetClientRect(self.get_handle() as _, &mut rect) };
