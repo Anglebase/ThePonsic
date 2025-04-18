@@ -1,4 +1,4 @@
-use ponsic_winsafe::*;
+use ponsic_winsafe::{graphics::Context, *};
 use std::{
     any::type_name,
     ops::{Deref, DerefMut},
@@ -7,7 +7,13 @@ use std::{
 
 fn window_proc(events: Events, mut data: The<WindowData>) -> Return {
     if let Some(mut data) = data.as_mut() {
-        data.item.handle(events)
+        match events.event {
+            Event::Paint { context } => {
+                data.item.draw(context);
+                Return::Default
+            }
+            _ => data.item.handle(events)
+        }
     } else {
         Return::Default
     }
@@ -15,6 +21,7 @@ fn window_proc(events: Events, mut data: The<WindowData>) -> Return {
 
 pub trait Proc {
     fn handle(&mut self, events: Events) -> Return;
+    fn draw(&mut self, context: Context);
 }
 
 pub struct WindowData {

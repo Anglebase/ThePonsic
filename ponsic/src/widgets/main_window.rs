@@ -13,6 +13,10 @@ impl Proc for MainWindow {
             _ => Return::Default,
         }
     }
+
+    fn draw(&mut self, context: ponsic_winsafe::graphics::Context) {
+        let _ = context;
+    }
 }
 
 impl MainWindow {
