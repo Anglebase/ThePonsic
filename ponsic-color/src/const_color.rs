@@ -20,14 +20,11 @@ impl Color {
     pub const AQUA: Self = Self::new(0x00, 0xff, 0xff);
     pub const ALICEBLUE: Self = Self::new(0xf0, 0xf8, 0xff);
     pub const ANTIQUEWHITE: Self = Self::new(0xfa, 0xeb, 0xd7);
-    pub const AQUA: Self = Self::new(0x00, 0xff, 0xff);
     pub const AQUAMARINE: Self = Self::new(0x7f, 0xff, 0xd4);
     pub const AZURE: Self = Self::new(0xf0, 0xff, 0xff);
     pub const BEIGE: Self = Self::new(0xf5, 0xf5, 0xdc);
     pub const BISQUE: Self = Self::new(0xff, 0xe4, 0xc4);
-    pub const BLACK: Self = Self::new(0x00, 0x00, 0x00);
     pub const BLANCHEDALMOND: Self = Self::new(0xff, 0xeb, 0xcd);
-    pub const BLUE: Self = Self::new(0x00, 0x00, 0xff);
     pub const BLUEVIOLET: Self = Self::new(0x8a, 0x2b, 0xe2);
     pub const BROWN: Self = Self::new(0xa5, 0x2a, 0x2a);
     pub const BURLYWOOD: Self = Self::new(0xde, 0xb8, 0x87);
@@ -65,13 +62,10 @@ impl Color {
     pub const FIREBRICK: Self = Self::new(0xb2, 0x22, 0x22);
     pub const FLORALWHITE: Self = Self::new(0xff, 0xfa, 0xf0);
     pub const FORESTGREEN: Self = Self::new(0x22, 0x8b, 0x22);
-    pub const FUCHSIA: Self = Self::new(0xff, 0x00, 0xff);
     pub const GAINSBORO: Self = Self::new(0xdc, 0xdc, 0xdc);
     pub const GHOSTWHITE: Self = Self::new(0xf8, 0xf8, 0xff);
     pub const GOLD: Self = Self::new(0xff, 0xd7, 0x00);
     pub const GOLDENROD: Self = Self::new(0xda, 0xa5, 0x20);
-    pub const GRAY: Self = Self::new(0x80, 0x80, 0x80);
-    pub const GREEN: Self = Self::new(0x00, 0x80, 0x00);
     pub const GREENYELLOW: Self = Self::new(0xad, 0xff, 0x2f);
     pub const HONEYDEW: Self = Self::new(0xf0, 0xff, 0xf0);
     pub const HOTPINK: Self = Self::new(0xff, 0x69, 0xb4);
@@ -98,10 +92,8 @@ impl Color {
     pub const LIGHTSLATEGREY: Self = Self::new(0x77, 0x88, 0x99);
     pub const LIGHTSTEELBLUE: Self = Self::new(0xb0, 0xc4, 0xde);
     pub const LIGHTYELLOW: Self = Self::new(0xff, 0xff, 0xe0);
-    pub const LIME: Self = Self::new(0x00, 0xff, 0x00);
     pub const LIMEGREEN: Self = Self::new(0x32, 0xcd, 0x32);
     pub const LINEN: Self = Self::new(0xfa, 0xf0, 0xe6);
-    pub const MAROON: Self = Self::new(0x80, 0x00, 0x00);
     pub const MEDIUMAQUAMARINE: Self = Self::new(0x66, 0xcd, 0xaa);
     pub const MEDIUMBLUE: Self = Self::new(0x00, 0x00, 0xcd);
     pub const MEDIUMORCHID: Self = Self::new(0xba, 0x55, 0xd3);
@@ -116,9 +108,7 @@ impl Color {
     pub const MISTYROSE: Self = Self::new(0xff, 0xe4, 0xe1);
     pub const MOCCASIN: Self = Self::new(0xff, 0xe4, 0xb5);
     pub const NAVAJOWHITE: Self = Self::new(0xff, 0xde, 0xad);
-    pub const NAVY: Self = Self::new(0x00, 0x00, 0x80);
     pub const OLDLACE: Self = Self::new(0xfd, 0xf5, 0xe6);
-    pub const OLIVE: Self = Self::new(0x80, 0x80, 0x00);
     pub const OLIVEDRAB: Self = Self::new(0x6b, 0x8e, 0x23);
     pub const ORANGE: Self = Self::new(0xff, 0xa5, 0x00);
     pub const ORANGERED: Self = Self::new(0xff, 0x45, 0x00);
@@ -133,9 +123,7 @@ impl Color {
     pub const PINK: Self = Self::new(0xff, 0xc0, 0xcb);
     pub const PLUM: Self = Self::new(0xdd, 0xa0, 0xdd);
     pub const POWDERBLUE: Self = Self::new(0xb0, 0xe0, 0xe6);
-    pub const PURPLE: Self = Self::new(0x80, 0x00, 0x80);
     pub const REBECCAPURPLE: Self = Self::new(0x66, 0x33, 0x99);
-    pub const RED: Self = Self::new(0xff, 0x00, 0x00);
     pub const ROSYBROWN: Self = Self::new(0xbc, 0x8f, 0x8f);
     pub const ROYALBLUE: Self = Self::new(0x41, 0x69, 0xe1);
     pub const SADDLEBROWN: Self = Self::new(0x8b, 0x45, 0x13);
@@ -144,7 +132,6 @@ impl Color {
     pub const SEAGREEN: Self = Self::new(0x2e, 0x8b, 0x57);
     pub const SEASHELL: Self = Self::new(0xff, 0xf5, 0xee);
     pub const SIENNA: Self = Self::new(0xa0, 0x52, 0x2d);
-    pub const SILVER: Self = Self::new(0xc0, 0xc0, 0xc0);
     pub const SKYBLUE: Self = Self::new(0x87, 0xce, 0xeb);
     pub const SLATEBLUE: Self = Self::new(0x6a, 0x5a, 0xcd);
     pub const SLATEGRAY: Self = Self::new(0x70, 0x80, 0x90);
@@ -153,14 +140,11 @@ impl Color {
     pub const SPRINGGREEN: Self = Self::new(0x00, 0xff, 0x7f);
     pub const STEELBLUE: Self = Self::new(0x46, 0x82, 0xb4);
     pub const TAN: Self = Self::new(0xd2, 0xb4, 0x8c);
-    pub const TEAL: Self = Self::new(0x00, 0x80, 0x80);
     pub const THISTLE: Self = Self::new(0xd8, 0xbf, 0xd8);
     pub const TOMATO: Self = Self::new(0xff, 0x63, 0x47);
     pub const TURQUOISE: Self = Self::new(0x40, 0xe0, 0xd0);
     pub const VIOLET: Self = Self::new(0xee, 0x82, 0xee);
     pub const WHEAT: Self = Self::new(0xf5, 0xde, 0xb3);
-    pub const WHITE: Self = Self::new(0xff, 0xff, 0xff);
     pub const WHITESMOKE: Self = Self::new(0xf5, 0xf5, 0xf5);
-    pub const YELLOW: Self = Self::new(0xff, 0xff, 0x00);
     pub const YELLOWGREEN: Self = Self::new(0x9a, 0xcd, 0x32);
 }

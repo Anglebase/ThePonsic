@@ -39,7 +39,7 @@ print("查询完毕")
 print("正在生成 Rust 代码")
 
 with open(target, "w", encoding="utf-8") as f:
-    f.write(f"// 此文件是由 {__file__} 生成的\n")
+    f.write(f"// 此文件是由 {__file__.split('\\')[-1]} 生成的\n")
     f.write(
         """\
 pub const fn translate_error(code: u32) -> &'static str {

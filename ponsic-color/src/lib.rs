@@ -186,3 +186,47 @@ impl From<ColorHSL> for Color {
         Self::from_hsl(hsl)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_color_hsv() {
+        let color = Color::new(255, 0, 0);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 0.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+
+        let color = Color::new(0, 255, 0);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 120.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+
+        let color = Color::new(0, 0, 255);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 240.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+
+        let color = Color::new(255, 255, 0);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 60.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+
+        let color = Color::new(0, 255, 255);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 180.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+
+        let color = Color::new(255, 0, 255);
+        let hsv = color.into_hsv();
+        assert_eq!(hsv.hue, 300.0);
+        assert_eq!(hsv.saturation, 1.0);
+        assert_eq!(hsv.value, 1.0);
+    }
+}

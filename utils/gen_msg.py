@@ -55,8 +55,8 @@ def get_common():
 
 def write_code(result):
     with open(target, "w", encoding="utf-8") as f:
-        f.write(f"// 此文件是由 {__file__} 生成的\n")
-        f.write("\nuse winapi::um::winuser::*;\n\n")
+        f.write(f"// 此文件是由 {__file__.split('\\')[-1]} 生成的\n")
+        f.write("\n#![allow(unreachable_patterns)]\nuse winapi::um::winuser::*;\n")
         f.write(
             """
 pub const fn translate_msg(code: u32) -> &'static str {
