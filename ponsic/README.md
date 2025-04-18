@@ -61,6 +61,7 @@ Ponsic 也提供了如下一种基于传统多态扩展的窗口定义方式，�
 ```rust
 use ponsic::{
     *,
+    widgets::{Proc, Window},
     graphics::context_2d::{Context2D, DrawText},
 };
 
