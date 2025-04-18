@@ -1,5 +1,4 @@
 use ponsic_winsafe::{App, Event, Events, Recti, Return, SystemError, WindowEvent};
-
 use super::{Proc, Window};
 
 pub struct MainWindow {}
@@ -13,6 +12,10 @@ impl Proc for MainWindow {
             }
             _ => Return::Default,
         }
+    }
+
+    fn draw(&mut self, context: ponsic_winsafe::graphics::Context) {
+        let _ = context;
     }
 }
 

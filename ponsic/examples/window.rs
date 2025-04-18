@@ -1,5 +1,9 @@
 #[cfg(target_os = "windows")]
 use ponsic::{App, Event, Events, Return, WindowEvent, widgets::Proc};
+use ponsic::{
+    Recti,
+    graphics::context_2d::{Context2D, DrawText},
+};
 
 #[cfg(not(target_os = "windows"))]
 fn main() {}
@@ -12,6 +16,11 @@ impl Proc for MyWindow {
             return Return::Finish;
         }
         Return::Default
+    }
+
+    fn draw(&mut self, context: ponsic::graphics::Context) {
+        let context: Context2D = context.into();
+        context.draw_text("Hello World", &mut Recti::new(10, 10, 100, 100), &[]);
     }
 }
 
