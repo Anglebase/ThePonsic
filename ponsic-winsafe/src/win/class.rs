@@ -1,7 +1,7 @@
 use crate::check_error;
-use ponsic_types::Recti as Rect;
 use crate::safe_proc::WndProc;
 use crate::win::window;
+use ponsic_types::Recti as Rect;
 use std::ptr::null_mut;
 use winapi::shared::windef::{HBRUSH, HCURSOR};
 use winapi::um::libloaderapi::GetModuleHandleW;
@@ -59,7 +59,12 @@ impl Class {
     pub fn make_window(&self, rect: Rect) -> window::Builder {
         window::Builder::new(
             &self.name,
-            (rect.left(), rect.top(), rect.width() as _, rect.height() as _),
+            (
+                rect.left(),
+                rect.top(),
+                rect.width() as _,
+                rect.height() as _,
+            ),
         )
     }
 }

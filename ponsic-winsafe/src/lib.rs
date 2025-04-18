@@ -22,5 +22,5 @@ pub use win::{app::App, class::*, error::*, gen_by_py::translate_msg, window::*}
 #[cfg(target_os = "windows")]
 pub use window_data::*;
 
-pub use ponsic_types::*;
 pub use ponsic_color::*;
+pub use ponsic_types::*;

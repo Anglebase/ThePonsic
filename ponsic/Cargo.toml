@@ -8,10 +8,14 @@ license = "Apache-2.0"
 
 [package.metadata.docs.rs]
 default-target = "x86_64-pc-windows-msvc"
-targets = ["aarch64-pc-windows-msvc", "i686-pc-windows-msvc", "x86_64-pc-windows-msvc"]
+targets = [
+    "aarch64-pc-windows-msvc",
+    "i686-pc-windows-msvc",
+    "x86_64-pc-windows-msvc",
+]
 
 [target.'cfg(windows)'.dependencies]
-ponsic-winsafe = "1.0.0"
+ponsic-winsafe = { version = "1.0.0", path = "../ponsic-winsafe" }
 
 [dependencies]
 inherits = "0.1.2"

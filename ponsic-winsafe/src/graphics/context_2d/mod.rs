@@ -3,13 +3,13 @@ mod pen;
 mod text;
 mod traits;
 
-use std::fmt::Debug;
-use ponsic_color::Color;
-pub use traits::*;
 use super::context::Context;
 pub use brush::*;
 pub use pen::*;
+use ponsic_color::Color;
+use std::fmt::Debug;
 pub use text::*;
+pub use traits::*;
 use winapi::{
     shared::windef::{HDC, HWND},
     um::{wingdi::*, winuser::*},

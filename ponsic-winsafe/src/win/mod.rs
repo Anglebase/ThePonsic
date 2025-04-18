@@ -41,15 +41,15 @@ mod tests {
             .build()?;
 
         let window = class
-            .make_window(Rect::from((Point::new(100,100), Size::new(800, 600))))
+            .make_window(Rect::from((Point::new(100, 100), Size::new(800, 600))))
             .set_style(&[window::WindowStyle::OverlappedWindow])
             .build()?;
 
         window.show();
-        
+
         let exit_ = Arc::new(Mutex::new(false));
         let exit = exit_.clone();
-        let join = spawn(move||{
+        let join = spawn(move || {
             sleep(Duration::from_secs(1));
             *exit.lock().unwrap() = true;
         });
@@ -88,7 +88,7 @@ mod tests {
 
         let exit_ = Arc::new(Mutex::new(false));
         let exit = exit_.clone();
-        let join = spawn(move||{
+        let join = spawn(move || {
             sleep(Duration::from_secs(1));
             *exit.lock().unwrap() = true;
         });

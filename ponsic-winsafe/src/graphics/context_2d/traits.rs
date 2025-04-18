@@ -1,7 +1,7 @@
+use super::{Brush, DrawTextMode, Font, Pen};
+use ponsic_color::Color;
 use ponsic_types::Pointi as Point;
 use ponsic_types::Recti as Rect;
-use ponsic_color::Color;
-use super::{Brush, DrawTextMode, Font, Pen};
 use std::ptr::null_mut;
 use winapi::{
     shared::windef::{HDC, HWND},
@@ -60,13 +60,25 @@ pub trait DrawOpen: Context2DData {
 pub trait DrawClose: Context2DData {
     fn rectangle(&self, rect: Rect) {
         unsafe {
-            Rectangle(self.hdc(), rect.left(), rect.top(), rect.right(), rect.bottom());
+            Rectangle(
+                self.hdc(),
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
+            );
         }
     }
 
     fn ellipse(&self, rect: Rect) {
         unsafe {
-            Ellipse(self.hdc(), rect.left(), rect.top(), rect.right(), rect.bottom());
+            Ellipse(
+                self.hdc(),
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.bottom(),
+            );
         }
     }
 
