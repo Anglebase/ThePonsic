@@ -8,11 +8,6 @@ use crate::graphics::Context;
 /// 按键标识
 ///
 /// 此枚举标识(美式)键盘上所有的按键
-///
-/// # Note
-/// 此枚举值为 `WyKey::Unknown` 时，即使另一个与它比较的枚举值也是 `WyKey::Unknown`，依然判断其不相等，
-/// 因为它们的实际键码可能不同，如果想要判断枚举值是否是 `WyKey::Unknown`，应使用 \[`is_unknown()`\]
-///
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum KeyCode {
     /// A

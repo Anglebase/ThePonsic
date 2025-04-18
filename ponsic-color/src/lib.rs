@@ -1,5 +1,6 @@
 mod const_color;
 
+/// RGB 颜色类型
 #[repr(C, align(4))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Color {
@@ -9,12 +10,14 @@ pub struct Color {
     pub red: u8,
 }
 
+/// HSV 颜色类型
 pub struct ColorHSV {
     pub hue: f32,
     pub saturation: f32,
     pub value: f32,
 }
 
+/// HSL 颜色类型
 pub struct ColorHSL {
     pub hue: f32,
     pub saturation: f32,
@@ -22,6 +25,7 @@ pub struct ColorHSL {
 }
 
 impl Color {
+    /// 创建一个颜色
     pub const fn new(red: u8, green: u8, blue: u8) -> Color {
         Color {
             _ph: 0,
@@ -33,6 +37,7 @@ impl Color {
 }
 
 impl Color {
+    /// 将 RGB 颜色转换为 HSV 颜色
     pub const fn into_hsv(self) -> ColorHSV {
         let r = self.red as f32 / 255.0;
         let g = self.green as f32 / 255.0;
@@ -66,6 +71,7 @@ impl Color {
         }
     }
 
+    /// 将 RGB 颜色转换为 HSL 颜色
     pub const fn into_hsl(self) -> ColorHSL {
         let r = self.red as f32 / 255.0;
         let g = self.green as f32 / 255.0;
@@ -104,6 +110,7 @@ impl Color {
         }
     }
 
+    /// 将 HSV 颜色转换为 RGB 颜色
     pub const fn from_hsv(hsv: ColorHSV) -> Color {
         let chroma = hsv.value * hsv.saturation;
         let hue_prime = hsv.hue / 60.0;
@@ -132,6 +139,7 @@ impl Color {
         )
     }
 
+    /// 将 HSL 颜色转换为 RGB 颜色
     pub const fn from_hsl(hsl: ColorHSL) -> Color {
         let chroma = (1.0 - (2.0 * hsl.lightness - 1.0).abs()) * hsl.saturation;
         let hue_prime = hsl.hue / 60.0;

@@ -1,6 +1,7 @@
 use std::ptr::null_mut;
 use winapi::um::winuser::*;
 
+/// 应用程序对象
 pub struct App;
 
 impl App {
