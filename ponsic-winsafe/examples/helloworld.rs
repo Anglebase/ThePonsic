@@ -1,5 +1,10 @@
+#[cfg(not(target_os = "windows"))]
+fn main() {}
+
+#[cfg(target_os = "windows")]
 use ponsic_winsafe::*;
 
+#[cfg(target_os = "windows")]
 fn main() -> Result<(), SystemError> {
     let class = Registrar::new("HelloWorld")
         .set_cursor(Cursor::Arrow)
