@@ -117,6 +117,14 @@ pub trait WindowManager {
         }
     }
 
+    /// 隐藏窗口
+    fn hide(&self) {
+        let handle = self.get_handle() as HWND;
+        unsafe {
+            ShowWindow(handle, SW_HIDE);
+        }
+    }
+
     /// 设置窗口文本
     ///
     /// # Note
