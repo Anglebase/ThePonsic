@@ -119,6 +119,19 @@ pub trait WindowManager {
     ///
     /// # Note
     /// 此函数通过向回调函数发送请求信息来设置窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
+    fn set_text(&self, title: &str) {
+        let handle = self.get_handle() as HWND;
+        let title: Vec<u16> = String::from(title).encode_utf16().chain(Some(0)).collect();
+        unsafe {
+            SetWindowTextW(handle, title.as_ptr());
+        }
+    }
+
+    /// 设置窗口文本
+    ///
+    /// # Note
+    /// 此函数通过向回调函数发送请求信息来设置窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
+    #[deprecated(since = "1.0.0", note = "此方法已弃用，请使用 WindowManager::set_text() 代替")]
     fn set_title(&self, title: &str) {
         let handle = self.get_handle() as HWND;
         let title: Vec<u16> = String::from(title).encode_utf16().chain(Some(0)).collect();
@@ -131,6 +144,21 @@ pub trait WindowManager {
     ///
     /// # Note
     /// 此函数通过向回调函数发送请求信息来获取窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
+    fn text(&self) -> String {
+        let handle = self.get_handle() as HWND;
+        unsafe {
+            let len = GetWindowTextLengthW(handle) as usize + 1;
+            let mut title: Vec<u16> = vec![0; len];
+            GetWindowTextW(handle, title.as_mut_ptr(), len as i32);
+            String::from_utf16(&title[0..len - 1]).unwrap()
+        }
+    }
+
+    /// 获取窗口文本
+    ///
+    /// # Note
+    /// 此函数通过向回调函数发送请求信息来获取窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
+    #[deprecated(since = "1.0.0", note = "此方法已弃用，请使用 WindowManager::text() 代替")]
     fn title(&self) -> String {
         let handle = self.get_handle() as HWND;
         unsafe {
