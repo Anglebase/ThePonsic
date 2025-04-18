@@ -1,3 +1,4 @@
+use ponsic_types::Recti;
 use std::fmt::Debug;
 use std::ptr::{null, null_mut};
 use winapi::shared::windef::*;
@@ -131,7 +132,10 @@ pub trait WindowManager {
     ///
     /// # Note
     /// 此函数通过向回调函数发送请求信息来设置窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
-    #[deprecated(since = "1.0.0", note = "此方法已弃用，请使用 WindowManager::set_text() 代替")]
+    #[deprecated(
+        since = "1.0.0",
+        note = "此方法已弃用，请使用 WindowManager::set_text() 代替"
+    )]
     fn set_title(&self, title: &str) {
         let handle = self.get_handle() as HWND;
         let title: Vec<u16> = String::from(title).encode_utf16().chain(Some(0)).collect();
@@ -158,7 +162,10 @@ pub trait WindowManager {
     ///
     /// # Note
     /// 此函数通过向回调函数发送请求信息来获取窗口文本，不应在回调函数中无条件调用，否则会引发无限递归而导致栈溢出
-    #[deprecated(since = "1.0.0", note = "此方法已弃用，请使用 WindowManager::text() 代替")]
+    #[deprecated(
+        since = "1.0.0",
+        note = "此方法已弃用，请使用 WindowManager::text() 代替"
+    )]
     fn title(&self) -> String {
         let handle = self.get_handle() as HWND;
         unsafe {
@@ -201,6 +208,18 @@ pub trait WindowManager {
                 RDW_UPDATENOW | RDW_INVALIDATE,
             );
         }
+    }
+
+    fn get_rect(&self) -> Recti {
+        let mut rect = unsafe { std::mem::zeroed::<RECT>() };
+        unsafe { GetWindowRect(self.get_handle() as _, &mut rect) };
+        Recti::new(rect.left, rect.top, rect.right, rect.bottom)
+    }
+
+    fn get_client_rect(&self) -> Recti {
+        let mut rect = unsafe { std::mem::zeroed::<RECT>() };
+        unsafe { GetClientRect(self.get_handle() as _, &mut rect) };
+        Recti::new(rect.left, rect.top, rect.right, rect.bottom)
     }
 }
 
