@@ -1,5 +1,4 @@
 use ponsic_winsafe::{App, Event, Events, Recti, Return, SystemError, WindowEvent};
-
 use super::{Proc, Window};
 
 pub struct MainWindow {}
