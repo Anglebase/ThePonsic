@@ -130,7 +130,7 @@ impl Registrar {
     }
 
     pub fn set_style(mut self, styles: &[ClassStyle]) -> Self {
-        for &style in styles {
+        styles.iter().for_each(|style| {
             self.style |= match style {
                 ClassStyle::ByteAlignClient => CS_BYTEALIGNCLIENT,
                 ClassStyle::ByteAlignWindow => CS_BYTEALIGNWINDOW,
@@ -144,8 +144,8 @@ impl Registrar {
                 ClassStyle::ParentDeviceContext => CS_PARENTDC,
                 ClassStyle::SaveBits => CS_SAVEBITS,
                 ClassStyle::VerticalRedraw => CS_VREDRAW,
-            };
-        }
+            }
+        });
         self
     }
 

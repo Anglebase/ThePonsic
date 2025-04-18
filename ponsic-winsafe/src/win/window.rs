@@ -311,172 +311,170 @@ impl Builder {
     ///
     /// 参考 [WindowStyle]
     pub fn set_style(mut self, style: &[WindowStyle]) -> Self {
-        for &style in style {
-            match style {
-                WindowStyle::AcceptFiles => {
-                    self.extra_styles |= WS_EX_ACCEPTFILES;
-                }
-                WindowStyle::AppWindow => {
-                    self.extra_styles |= WS_EX_APPWINDOW;
-                }
-                WindowStyle::ClientEdge => {
-                    self.extra_styles |= WS_EX_CLIENTEDGE;
-                }
-                WindowStyle::Composited => {
-                    self.extra_styles |= WS_EX_COMPOSITED;
-                }
-                WindowStyle::Transparent => {
-                    self.extra_styles |= WS_EX_TRANSPARENT;
-                }
-                WindowStyle::ContextHelp => {
-                    self.extra_styles |= WS_EX_CONTEXTHELP;
-                }
-                WindowStyle::ControlParent => {
-                    self.extra_styles |= WS_EX_CONTROLPARENT;
-                }
-                WindowStyle::DlgModalFrame => {
-                    self.extra_styles |= WS_EX_DLGMODALFRAME;
-                }
-                WindowStyle::Layered => {
-                    self.extra_styles |= WS_EX_LAYERED;
-                }
-                WindowStyle::LayoutRtl => {
-                    self.extra_styles |= WS_EX_LAYOUTRTL;
-                }
-                WindowStyle::Left => {
-                    self.extra_styles |= WS_EX_LEFT;
-                }
-                WindowStyle::LeftScrollBar => {
-                    self.extra_styles |= WS_EX_LEFTSCROLLBAR;
-                }
-                WindowStyle::LtrReading => {
-                    self.extra_styles |= WS_EX_LTRREADING;
-                }
-                WindowStyle::MdiChild => {
-                    self.extra_styles |= WS_EX_MDICHILD;
-                }
-                WindowStyle::NoActivate => {
-                    self.extra_styles |= WS_EX_NOACTIVATE;
-                }
-                WindowStyle::NoInheritLayout => {
-                    self.extra_styles |= WS_EX_NOINHERITLAYOUT;
-                }
-                WindowStyle::NoParentNotify => {
-                    self.extra_styles |= WS_EX_NOPARENTNOTIFY;
-                }
-                WindowStyle::NoRedirectionBitmap => {
-                    self.extra_styles |= WS_EX_NOREDIRECTIONBITMAP;
-                }
-                WindowStyle::ExOverlappedWindow => {
-                    self.extra_styles |= WS_EX_OVERLAPPEDWINDOW;
-                }
-                WindowStyle::WindowEdge => {
-                    self.extra_styles |= WS_EX_WINDOWEDGE;
-                }
-                WindowStyle::PaletteWindow => {
-                    self.extra_styles |= WS_EX_PALETTEWINDOW;
-                }
-                WindowStyle::ToolWindow => {
-                    self.extra_styles |= WS_EX_TOOLWINDOW;
-                }
-                WindowStyle::TopMost => {
-                    self.extra_styles |= WS_EX_TOPMOST;
-                }
-                WindowStyle::Right => {
-                    self.extra_styles |= WS_EX_RIGHT;
-                }
-                WindowStyle::RightScrollBar => {
-                    self.extra_styles |= WS_EX_RIGHTSCROLLBAR;
-                }
-                WindowStyle::RtlReading => {
-                    self.extra_styles |= WS_EX_RTLREADING;
-                }
-                WindowStyle::StaticEdge => {
-                    self.extra_styles |= WS_EX_STATICEDGE;
-                }
-                WindowStyle::ChildWindow => {
-                    self.style |= WS_CHILDWINDOW;
-                }
-                WindowStyle::ClipChildren => {
-                    self.style |= WS_CLIPCHILDREN;
-                }
-                WindowStyle::ClipSiblings => {
-                    self.style |= WS_CLIPSIBLINGS;
-                }
-                WindowStyle::Disabled => {
-                    self.style |= WS_DISABLED;
-                }
-                WindowStyle::DlgFrame => {
-                    self.style |= WS_DLGFRAME;
-                }
-                WindowStyle::Group => {
-                    self.style |= WS_GROUP;
-                }
-                WindowStyle::HScroll => {
-                    self.style |= WS_HSCROLL;
-                }
-                WindowStyle::Maximize => {
-                    self.style |= WS_MAXIMIZE;
-                }
-                WindowStyle::Minimize => {
-                    self.style |= WS_MINIMIZE;
-                }
-                WindowStyle::Iconic => {
-                    self.style |= WS_ICONIC;
-                }
-                WindowStyle::Child => {
-                    self.style |= WS_CHILD;
-                }
-                WindowStyle::Popup => {
-                    self.style |= WS_POPUP;
-                }
-                WindowStyle::Border => {
-                    self.style |= WS_BORDER;
-                }
-                WindowStyle::PopupWindow => {
-                    self.style |= WS_POPUPWINDOW;
-                }
-                WindowStyle::TabStop => {
-                    self.style |= WS_TABSTOP;
-                }
-                WindowStyle::SizeBox => {
-                    self.style |= WS_SIZEBOX;
-                }
-                WindowStyle::Tiled => {
-                    self.style |= WS_TILED;
-                }
-                WindowStyle::TiledWindow => {
-                    self.style |= WS_TILEDWINDOW;
-                }
-                WindowStyle::Overlapped => {
-                    self.style |= WS_OVERLAPPED;
-                }
-                WindowStyle::Caption => {
-                    self.style |= WS_CAPTION;
-                }
-                WindowStyle::SysMenu => {
-                    self.style |= WS_SYSMENU;
-                }
-                WindowStyle::ThickFrame => {
-                    self.style |= WS_THICKFRAME;
-                }
-                WindowStyle::MinimizeBox => {
-                    self.style |= WS_MINIMIZEBOX;
-                }
-                WindowStyle::MaximizeBox => {
-                    self.style |= WS_MAXIMIZEBOX;
-                }
-                WindowStyle::OverlappedWindow => {
-                    self.style |= WS_OVERLAPPEDWINDOW;
-                }
-                WindowStyle::Visible => {
-                    self.style |= WS_VISIBLE;
-                }
-                WindowStyle::VScroll => {
-                    self.style |= WS_VSCROLL;
-                }
+        style.iter().for_each(|style| match style {
+            WindowStyle::AcceptFiles => {
+                self.extra_styles |= WS_EX_ACCEPTFILES;
             }
-        }
+            WindowStyle::AppWindow => {
+                self.extra_styles |= WS_EX_APPWINDOW;
+            }
+            WindowStyle::ClientEdge => {
+                self.extra_styles |= WS_EX_CLIENTEDGE;
+            }
+            WindowStyle::Composited => {
+                self.extra_styles |= WS_EX_COMPOSITED;
+            }
+            WindowStyle::Transparent => {
+                self.extra_styles |= WS_EX_TRANSPARENT;
+            }
+            WindowStyle::ContextHelp => {
+                self.extra_styles |= WS_EX_CONTEXTHELP;
+            }
+            WindowStyle::ControlParent => {
+                self.extra_styles |= WS_EX_CONTROLPARENT;
+            }
+            WindowStyle::DlgModalFrame => {
+                self.extra_styles |= WS_EX_DLGMODALFRAME;
+            }
+            WindowStyle::Layered => {
+                self.extra_styles |= WS_EX_LAYERED;
+            }
+            WindowStyle::LayoutRtl => {
+                self.extra_styles |= WS_EX_LAYOUTRTL;
+            }
+            WindowStyle::Left => {
+                self.extra_styles |= WS_EX_LEFT;
+            }
+            WindowStyle::LeftScrollBar => {
+                self.extra_styles |= WS_EX_LEFTSCROLLBAR;
+            }
+            WindowStyle::LtrReading => {
+                self.extra_styles |= WS_EX_LTRREADING;
+            }
+            WindowStyle::MdiChild => {
+                self.extra_styles |= WS_EX_MDICHILD;
+            }
+            WindowStyle::NoActivate => {
+                self.extra_styles |= WS_EX_NOACTIVATE;
+            }
+            WindowStyle::NoInheritLayout => {
+                self.extra_styles |= WS_EX_NOINHERITLAYOUT;
+            }
+            WindowStyle::NoParentNotify => {
+                self.extra_styles |= WS_EX_NOPARENTNOTIFY;
+            }
+            WindowStyle::NoRedirectionBitmap => {
+                self.extra_styles |= WS_EX_NOREDIRECTIONBITMAP;
+            }
+            WindowStyle::ExOverlappedWindow => {
+                self.extra_styles |= WS_EX_OVERLAPPEDWINDOW;
+            }
+            WindowStyle::WindowEdge => {
+                self.extra_styles |= WS_EX_WINDOWEDGE;
+            }
+            WindowStyle::PaletteWindow => {
+                self.extra_styles |= WS_EX_PALETTEWINDOW;
+            }
+            WindowStyle::ToolWindow => {
+                self.extra_styles |= WS_EX_TOOLWINDOW;
+            }
+            WindowStyle::TopMost => {
+                self.extra_styles |= WS_EX_TOPMOST;
+            }
+            WindowStyle::Right => {
+                self.extra_styles |= WS_EX_RIGHT;
+            }
+            WindowStyle::RightScrollBar => {
+                self.extra_styles |= WS_EX_RIGHTSCROLLBAR;
+            }
+            WindowStyle::RtlReading => {
+                self.extra_styles |= WS_EX_RTLREADING;
+            }
+            WindowStyle::StaticEdge => {
+                self.extra_styles |= WS_EX_STATICEDGE;
+            }
+            WindowStyle::ChildWindow => {
+                self.style |= WS_CHILDWINDOW;
+            }
+            WindowStyle::ClipChildren => {
+                self.style |= WS_CLIPCHILDREN;
+            }
+            WindowStyle::ClipSiblings => {
+                self.style |= WS_CLIPSIBLINGS;
+            }
+            WindowStyle::Disabled => {
+                self.style |= WS_DISABLED;
+            }
+            WindowStyle::DlgFrame => {
+                self.style |= WS_DLGFRAME;
+            }
+            WindowStyle::Group => {
+                self.style |= WS_GROUP;
+            }
+            WindowStyle::HScroll => {
+                self.style |= WS_HSCROLL;
+            }
+            WindowStyle::Maximize => {
+                self.style |= WS_MAXIMIZE;
+            }
+            WindowStyle::Minimize => {
+                self.style |= WS_MINIMIZE;
+            }
+            WindowStyle::Iconic => {
+                self.style |= WS_ICONIC;
+            }
+            WindowStyle::Child => {
+                self.style |= WS_CHILD;
+            }
+            WindowStyle::Popup => {
+                self.style |= WS_POPUP;
+            }
+            WindowStyle::Border => {
+                self.style |= WS_BORDER;
+            }
+            WindowStyle::PopupWindow => {
+                self.style |= WS_POPUPWINDOW;
+            }
+            WindowStyle::TabStop => {
+                self.style |= WS_TABSTOP;
+            }
+            WindowStyle::SizeBox => {
+                self.style |= WS_SIZEBOX;
+            }
+            WindowStyle::Tiled => {
+                self.style |= WS_TILED;
+            }
+            WindowStyle::TiledWindow => {
+                self.style |= WS_TILEDWINDOW;
+            }
+            WindowStyle::Overlapped => {
+                self.style |= WS_OVERLAPPED;
+            }
+            WindowStyle::Caption => {
+                self.style |= WS_CAPTION;
+            }
+            WindowStyle::SysMenu => {
+                self.style |= WS_SYSMENU;
+            }
+            WindowStyle::ThickFrame => {
+                self.style |= WS_THICKFRAME;
+            }
+            WindowStyle::MinimizeBox => {
+                self.style |= WS_MINIMIZEBOX;
+            }
+            WindowStyle::MaximizeBox => {
+                self.style |= WS_MAXIMIZEBOX;
+            }
+            WindowStyle::OverlappedWindow => {
+                self.style |= WS_OVERLAPPEDWINDOW;
+            }
+            WindowStyle::Visible => {
+                self.style |= WS_VISIBLE;
+            }
+            WindowStyle::VScroll => {
+                self.style |= WS_VSCROLL;
+            }
+        });
         self
     }
 
