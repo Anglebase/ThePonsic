@@ -18,7 +18,7 @@ pub use safe_proc::*;
 #[cfg(target_os = "windows")]
 pub use the::*;
 #[cfg(target_os = "windows")]
-pub use win::{app::App, class::*, error::*, gen_by_py::translate_msg, window::*};
+pub use win::{app::App, class::*, dialog, error::*, gen_by_py::translate_msg, window::*};
 #[cfg(target_os = "windows")]
 pub use window_data::*;
 

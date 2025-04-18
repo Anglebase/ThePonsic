@@ -5,6 +5,7 @@ pub mod class;
 pub mod error;
 pub mod gen_by_py;
 pub mod window;
+pub mod dialog;
 
 pub type Result<T> = std::result::Result<T, SystemError>;
 
