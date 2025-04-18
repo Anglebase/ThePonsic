@@ -1,6 +1,7 @@
 use ponsic_types::Pointi as Point;
 use ponsic_types::Recti as Rect;
-use super::{Brush, Color, DrawTextMode, Font, Pen};
+use ponsic_color::Color;
+use super::{Brush, DrawTextMode, Font, Pen};
 use std::ptr::null_mut;
 use winapi::{
     shared::windef::{HDC, HWND},

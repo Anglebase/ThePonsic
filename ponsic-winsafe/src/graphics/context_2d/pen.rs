@@ -4,7 +4,7 @@ use winapi::um::wingdi::*;
 
 use crate::{SystemError, check_error};
 
-use super::Color;
+use ponsic_color::Color;
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Default)]
 pub enum LineStyle<'a> {
@@ -103,7 +103,7 @@ impl Pen {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct GenPen<'a> {
     pub line_style: LineStyle<'a>,
     pub join_style: JoinStyle,
@@ -111,6 +111,19 @@ pub struct GenPen<'a> {
     pub pen_style: PenStyle,
     pub width: usize,
     pub color: Color,
+}
+
+impl Default for GenPen<'static> {
+    fn default() -> Self {
+        GenPen {
+            line_style: Default::default(),
+            join_style: Default::default(),
+            cap_style: Default::default(),
+            pen_style: Default::default(),
+            width: Default::default(),
+            color: Color::BLACK,
+        }
+    }
 }
 
 impl<'a> GenPen<'a> {

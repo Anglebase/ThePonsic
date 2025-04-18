@@ -1,15 +1,13 @@
 mod brush;
-mod color;
 mod pen;
 mod text;
 mod traits;
 
 use std::fmt::Debug;
+use ponsic_color::Color;
 pub use traits::*;
-
 use super::context::Context;
 pub use brush::*;
-pub use color::*;
 pub use pen::*;
 pub use text::*;
 use winapi::{
@@ -102,8 +100,8 @@ impl Context2D<'_> {
             ps,
             pen_data: GenPen::default(),
             pen: GenPen::default().create(),
-            brush_data: GenBrush::Solid(Color::from_gray(255)),
-            brush: GenBrush::Solid(Color::from_gray(255)).create(),
+            brush_data: GenBrush::Solid(Color::WHITE),
+            brush: GenBrush::Solid(Color::WHITE).create(),
             font_data: GenFont::default(),
             font: GenFont::default().create(),
         }

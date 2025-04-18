@@ -45,6 +45,12 @@ pub enum GenBrush {
     Hatch(Color, HatchStyle),
 }
 
+impl Default for GenBrush {
+    fn default() -> Self {
+        GenBrush::Solid(Color::BLACK)
+    }
+}
+
 impl GenBrush {
     pub fn create(self) -> Brush {
         self.create_by_ref()

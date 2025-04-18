@@ -23,3 +23,4 @@ pub use win::{app::App, class::*, error::*, gen_by_py::translate_msg, window::*}
 pub use window_data::*;
 
 pub use ponsic_types::*;
+pub use ponsic_color::*;
