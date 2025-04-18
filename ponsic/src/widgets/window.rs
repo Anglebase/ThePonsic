@@ -9,8 +9,6 @@ fn window_proc(events: Events, mut data: The<WindowData>) -> Return {
     if let Some(mut data) = data.as_mut() {
         data.item.handle(events)
     } else {
-        println!("Error: data is not initialized for window");
-        println!("Events: {:#?}", events.event);
         Return::Default
     }
 }
@@ -43,7 +41,7 @@ impl DerefMut for Window {
 }
 
 impl Window {
-    pub fn new<T: Proc + 'static>(
+    pub fn create<T: Proc + 'static>(
         rect: Recti,
         title: &str,
         parent: Option<WindowId>,
