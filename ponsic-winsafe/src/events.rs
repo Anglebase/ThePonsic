@@ -9,7 +9,7 @@ use crate::graphics::Context;
 ///
 /// 此枚举标识(美式)键盘上所有的按键
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum KeyCode {
+pub enum Key {
     /// A
     A,
     /// B
@@ -240,87 +240,87 @@ pub enum KeyCode {
     Unknown(i32),
 }
 
-impl PartialEq<char> for KeyCode {
+impl PartialEq<char> for Key {
     #[inline(never)]
     fn eq(&self, other: &char) -> bool {
         match (self, other) {
             // 字母键 (A-Z)
-            (KeyCode::A, 'a' | 'A') => true,
-            (KeyCode::B, 'b' | 'B') => true,
-            (KeyCode::C, 'c' | 'C') => true,
-            (KeyCode::D, 'd' | 'D') => true,
-            (KeyCode::E, 'e' | 'E') => true,
-            (KeyCode::F, 'f' | 'F') => true,
-            (KeyCode::G, 'g' | 'G') => true,
-            (KeyCode::H, 'h' | 'H') => true,
-            (KeyCode::I, 'i' | 'I') => true,
-            (KeyCode::J, 'j' | 'J') => true,
-            (KeyCode::K, 'k' | 'K') => true,
-            (KeyCode::L, 'l' | 'L') => true,
-            (KeyCode::M, 'm' | 'M') => true,
-            (KeyCode::N, 'n' | 'N') => true,
-            (KeyCode::O, 'o' | 'O') => true,
-            (KeyCode::P, 'p' | 'P') => true,
-            (KeyCode::Q, 'q' | 'Q') => true,
-            (KeyCode::R, 'r' | 'R') => true,
-            (KeyCode::S, 's' | 'S') => true,
-            (KeyCode::T, 't' | 'T') => true,
-            (KeyCode::U, 'u' | 'U') => true,
-            (KeyCode::V, 'v' | 'V') => true,
-            (KeyCode::W, 'w' | 'W') => true,
-            (KeyCode::X, 'x' | 'X') => true,
-            (KeyCode::Y, 'y' | 'Y') => true,
-            (KeyCode::Z, 'z' | 'Z') => true,
+            (Key::A, 'a' | 'A') => true,
+            (Key::B, 'b' | 'B') => true,
+            (Key::C, 'c' | 'C') => true,
+            (Key::D, 'd' | 'D') => true,
+            (Key::E, 'e' | 'E') => true,
+            (Key::F, 'f' | 'F') => true,
+            (Key::G, 'g' | 'G') => true,
+            (Key::H, 'h' | 'H') => true,
+            (Key::I, 'i' | 'I') => true,
+            (Key::J, 'j' | 'J') => true,
+            (Key::K, 'k' | 'K') => true,
+            (Key::L, 'l' | 'L') => true,
+            (Key::M, 'm' | 'M') => true,
+            (Key::N, 'n' | 'N') => true,
+            (Key::O, 'o' | 'O') => true,
+            (Key::P, 'p' | 'P') => true,
+            (Key::Q, 'q' | 'Q') => true,
+            (Key::R, 'r' | 'R') => true,
+            (Key::S, 's' | 'S') => true,
+            (Key::T, 't' | 'T') => true,
+            (Key::U, 'u' | 'U') => true,
+            (Key::V, 'v' | 'V') => true,
+            (Key::W, 'w' | 'W') => true,
+            (Key::X, 'x' | 'X') => true,
+            (Key::Y, 'y' | 'Y') => true,
+            (Key::Z, 'z' | 'Z') => true,
 
             // 数字键 (0-9)
-            (KeyCode::Num0 | KeyCode::NumPad0, '0') => true,
-            (KeyCode::Num1 | KeyCode::NumPad1, '1') => true,
-            (KeyCode::Num2 | KeyCode::NumPad2, '2') => true,
-            (KeyCode::Num3 | KeyCode::NumPad3, '3') => true,
-            (KeyCode::Num4 | KeyCode::NumPad4, '4') => true,
-            (KeyCode::Num5 | KeyCode::NumPad5, '5') => true,
-            (KeyCode::Num6 | KeyCode::NumPad6, '6') => true,
-            (KeyCode::Num7 | KeyCode::NumPad7, '7') => true,
-            (KeyCode::Num8 | KeyCode::NumPad8, '8') => true,
-            (KeyCode::Num9 | KeyCode::NumPad9, '9') => true,
+            (Key::Num0 | Key::NumPad0, '0') => true,
+            (Key::Num1 | Key::NumPad1, '1') => true,
+            (Key::Num2 | Key::NumPad2, '2') => true,
+            (Key::Num3 | Key::NumPad3, '3') => true,
+            (Key::Num4 | Key::NumPad4, '4') => true,
+            (Key::Num5 | Key::NumPad5, '5') => true,
+            (Key::Num6 | Key::NumPad6, '6') => true,
+            (Key::Num7 | Key::NumPad7, '7') => true,
+            (Key::Num8 | Key::NumPad8, '8') => true,
+            (Key::Num9 | Key::NumPad9, '9') => true,
 
             // Shift + 数字键
-            (KeyCode::Num0, ')') => true,
-            (KeyCode::Num1, '!') => true,
-            (KeyCode::Num2, '@') => true,
-            (KeyCode::Num3, '#') => true,
-            (KeyCode::Num4, '$') => true,
-            (KeyCode::Num5, '%') => true,
-            (KeyCode::Num6, '^') => true,
-            (KeyCode::Num7, '&') => true,
-            (KeyCode::Num8, '*') => true,
-            (KeyCode::Num9, '(') => true,
+            (Key::Num0, ')') => true,
+            (Key::Num1, '!') => true,
+            (Key::Num2, '@') => true,
+            (Key::Num3, '#') => true,
+            (Key::Num4, '$') => true,
+            (Key::Num5, '%') => true,
+            (Key::Num6, '^') => true,
+            (Key::Num7, '&') => true,
+            (Key::Num8, '*') => true,
+            (Key::Num9, '(') => true,
 
             // 符号键
-            (KeyCode::Backtick, '`' | '~') => true,
-            (KeyCode::Comma, ',' | '<') => true,
-            (KeyCode::Dot, '.' | '>') => true,
-            (KeyCode::Slash, '/' | '?') => true,
-            (KeyCode::Semicolon, ';' | ':') => true,
-            (KeyCode::Apostrophe, '\'' | '"') => true,
-            (KeyCode::LeftBracket, '[' | '{') => true,
-            (KeyCode::RightBracket, ']' | '}') => true,
-            (KeyCode::Backslash, '\\' | '|') => true,
-            (KeyCode::Minus, '-' | '_') => true,
-            (KeyCode::Equals, '=' | '+') => true,
+            (Key::Backtick, '`' | '~') => true,
+            (Key::Comma, ',' | '<') => true,
+            (Key::Dot, '.' | '>') => true,
+            (Key::Slash, '/' | '?') => true,
+            (Key::Semicolon, ';' | ':') => true,
+            (Key::Apostrophe, '\'' | '"') => true,
+            (Key::LeftBracket, '[' | '{') => true,
+            (Key::RightBracket, ']' | '}') => true,
+            (Key::Backslash, '\\' | '|') => true,
+            (Key::Minus, '-' | '_') => true,
+            (Key::Equals, '=' | '+') => true,
 
             // 小键盘符号
-            (KeyCode::NumAdd, '+') => true,
-            (KeyCode::NumSub, '-') => true,
-            (KeyCode::NumMul, '*') => true,
-            (KeyCode::NumDiv, '/') => true,
-            (KeyCode::NumDot, '.') => true,
+            (Key::NumAdd, '+') => true,
+            (Key::NumSub, '-') => true,
+            (Key::NumMul, '*') => true,
+            (Key::NumDiv, '/') => true,
+            (Key::NumDot, '.') => true,
 
             // 控制字符
-            (KeyCode::Space, ' ') => true,
-            (KeyCode::Tab, '\t') => true,
-            (KeyCode::Enter, '\n' | '\r') => true, // 同时支持 LF 和 CR
-            (KeyCode::Backspace, '\x08') => true,  // ASCII 退格符
+            (Key::Space, ' ') => true,
+            (Key::Tab, '\t') => true,
+            (Key::Enter, '\n' | '\r') => true, // 同时支持 LF 和 CR
+            (Key::Backspace, '\x08') => true,  // ASCII 退格符
 
             _ => false,
         }
@@ -436,7 +436,7 @@ pub enum CursorAt {
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub enum Event<'a> {
     Key {
-        key: KeyCode,
+        key: Key,
         ex_key: bool,
         status: KeyStatus,
     },
