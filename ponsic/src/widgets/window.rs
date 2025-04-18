@@ -5,28 +5,22 @@ use std::{
     sync::OnceLock,
 };
 
-static CLASS: OnceLock<Result<Class, SystemError>> = OnceLock::new();
-
-fn window_proc(Events { event, window }: Events, mut data: The<WindowData>) -> Return {
-    match event {
-        Event::Window(WindowEvent::Close) => {
-            if let Some(mut data) = data.as_mut() {
-                data.item.destroy(window);
-            }
-            Return::Finish
-        }
-        _ => Return::Default,
+fn window_proc(events: Events, mut data: The<WindowData>) -> Return {
+    if let Some(mut data) = data.as_mut() {
+        data.item.handle(events)
+    } else {
+        println!("Error: data is not initialized for window");
+        println!("Events: {:#?}", events.event);
+        Return::Default
     }
 }
 
-pub trait Item {
-    fn destroy(&mut self, handle: WindowHandle) {
-        println!("{:?} destroy", handle);
-    }
+pub trait Proc {
+    fn handle(&mut self, events: Events) -> Return;
 }
 
 pub struct WindowData {
-    item: Box<dyn Item>,
+    item: Box<dyn Proc>,
 }
 
 pub struct Window {
@@ -49,12 +43,13 @@ impl DerefMut for Window {
 }
 
 impl Window {
-    pub fn new<T: Item + 'static>(
+    pub fn new<T: Proc + 'static>(
         rect: Recti,
         title: &str,
         parent: Option<WindowId>,
         item: T,
     ) -> Result<Self, SystemError> {
+        static CLASS: OnceLock<Result<Class, SystemError>> = OnceLock::new();
         let class = CLASS
             .get_or_init(|| -> Result<Class, SystemError> {
                 let class = Registrar::new(type_name::<Self>())

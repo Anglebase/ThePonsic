@@ -1,13 +1,17 @@
-use ponsic::{widgets::Item, App};
+#[cfg(target_os = "windows")]
+use ponsic::{App, Event, Events, Return, WindowEvent, widgets::Proc};
 
 #[cfg(not(target_os = "windows"))]
 fn main() {}
 
 struct MainWindow {}
-impl Item for MainWindow {
-    fn destroy(&mut self, handle: ponsic::WindowHandle) {
-        println!("MainWindow destroyed: {:?}", handle);
-        App::should_exit(0);
+impl Proc for MainWindow {
+    fn handle(&mut self, Events { event, .. }: Events) -> Return {
+        if let Event::Window(WindowEvent::Destroy) = event {
+            App::should_exit(0);
+            return Return::Finish;
+        }
+        Return::Default
     }
 }
 
