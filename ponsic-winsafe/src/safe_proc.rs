@@ -534,13 +534,7 @@ macro_rules! wndproc {
     ($t:ty ; $($f:tt)+) => {
         {
             extern "system" fn __inner_wndproc(__hwnd: $crate::HWND, __msg: u32, __wparam: usize, __lparam: isize) -> isize {
-                if __msg == 0x2 /* WM_DESTROY */ {
-                    #[allow(deprecated)]
-                    unsafe { $crate::cast_warpper_and_free::<$t>(
-                        $crate::WindowId::from_raw(__hwnd as _)
-                    ) };
-                }
-                if __msg == 0x1 /* WM_CREATE */ {
+                if __msg == 0x81 /* WM_CREATE */ {
                     #[allow(deprecated)]
                     $crate::bind_when_create(__hwnd, __lparam);
                 }
@@ -553,6 +547,12 @@ macro_rules! wndproc {
                     #[allow(deprecated)]
                     unsafe { $crate::assert_cast::<$t>($crate::WindowId::from_raw(__hwnd as _)) },
                 );
+                if __msg == 0x82 /* WM_DESTROY */ {
+                    #[allow(deprecated)]
+                    unsafe { $crate::cast_warpper_and_free::<$t>(
+                        $crate::WindowId::from_raw(__hwnd as _)
+                    ) };
+                }
                 match __result {
                     $crate::Return::Finish => 0,
                     $crate::Return::Default => $crate::default_proc(__hwnd, __msg, __wparam, __lparam),
