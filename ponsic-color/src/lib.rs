@@ -54,8 +54,13 @@ impl Color {
         let saturation = if max == 0.0 { 0.0 } else { delta / max };
         let value = max;
 
+        let mut hue = hue * 60.0;
+        if hue < 0.0 {
+            hue += 360.0;
+        }
+
         ColorHSV {
-            hue: hue * 60.0,
+            hue,
             saturation,
             value,
         }
@@ -87,8 +92,13 @@ impl Color {
             (r - g) / delta + 4.0
         };
 
+        let mut hue = hue * 60.0;
+        if hue < 0.0 {
+            hue += 360.0;
+        }
+
         ColorHSL {
-            hue: hue * 60.0,
+            hue,
             saturation,
             lightness,
         }
@@ -228,5 +238,133 @@ mod tests {
         assert_eq!(hsv.hue, 300.0);
         assert_eq!(hsv.saturation, 1.0);
         assert_eq!(hsv.value, 1.0);
+    }
+
+    #[test]
+    fn test_color_hsl() {
+        let color = Color::new(255, 0, 0);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 0.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+
+        let color = Color::new(0, 255, 0);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 120.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+
+        let color = Color::new(0, 0, 255);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 240.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+
+        let color = Color::new(255, 255, 0);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 60.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+        let color = Color::new(0, 255, 255);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 180.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+
+        let color = Color::new(255, 0, 255);
+        let hsl = color.into_hsl();
+        assert_eq!(hsl.hue, 300.0);
+        assert_eq!(hsl.saturation, 1.0);
+        assert_eq!(hsl.lightness, 0.5);
+    }
+
+    #[test]
+    fn test_color_from_hsv() {
+        let color = Color::from_hsv(ColorHSV {
+            hue: 0.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(255, 0, 0));
+
+        let color = Color::from_hsv(ColorHSV {
+            hue: 120.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(0, 255, 0));
+
+        let color = Color::from_hsv(ColorHSV {
+            hue: 240.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(0, 0, 255));
+
+        let color = Color::from_hsv(ColorHSV {
+            hue: 60.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(255, 255, 0));
+
+        let color = Color::from_hsv(ColorHSV {
+            hue: 180.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(0, 255, 255));
+
+        let color = Color::from_hsv(ColorHSV {
+            hue: 300.0,
+            saturation: 1.0,
+            value: 1.0,
+        });
+        assert_eq!(color, Color::new(255, 0, 255));
+    }
+
+    #[test]
+    fn test_color_from_hsl() {
+        let color = Color::from_hsl(ColorHSL {
+            hue: 0.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(255, 0, 0));
+
+        let color = Color::from_hsl(ColorHSL {
+            hue: 120.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(0, 255, 0));
+
+        let color = Color::from_hsl(ColorHSL {
+            hue: 240.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(0, 0, 255));
+
+        let color = Color::from_hsl(ColorHSL {
+            hue: 60.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(255, 255, 0));
+
+        let color = Color::from_hsl(ColorHSL {
+            hue: 180.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(0, 255, 255));
+
+        let color = Color::from_hsl(ColorHSL {
+            hue: 300.0,
+            saturation: 1.0,
+            lightness: 0.5,
+        });
+        assert_eq!(color, Color::new(255, 0, 255));
     }
 }
