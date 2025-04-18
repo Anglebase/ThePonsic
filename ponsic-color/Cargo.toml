@@ -2,5 +2,8 @@
 name = "ponsic-color"
 version = "0.1.0"
 edition = "2024"
+description = "The dependency of the `ponsic` crate."
+repository = "https://github.com/Anglebase/ThePonsic.git"
+license = "Apache-2.0"
 
 [dependencies]
