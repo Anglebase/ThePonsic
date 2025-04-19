@@ -1,11 +1,15 @@
 use ponsic_types::Recti;
+use std::cell::RefCell;
 use std::fmt::Debug;
 use std::ptr::{null, null_mut};
+use std::time::Duration;
 use winapi::shared::windef::*;
 use winapi::um::libloaderapi::GetModuleHandleW;
 use winapi::um::winuser::*;
 
 use crate::{SystemError, check_error, make_ptr};
+
+use super::timer::Timer;
 
 /// 参考 [WIN32 窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/window-styles)
 /// 及 [WIN32 扩展窗口样式](https://learn.microsoft.com/zh-cn/windows/win32/winmsg/extended-window-styles)
@@ -231,6 +235,35 @@ pub trait WindowManager {
         let mut rect = unsafe { std::mem::zeroed::<RECT>() };
         unsafe { GetClientRect(self.get_handle() as _, &mut rect) };
         Recti::new(rect.left, rect.top, rect.right, rect.bottom)
+    }
+
+    /// 为窗口注册新的定时器
+    ///
+    /// # Param
+    /// - `duration` 定时器的间隔时间, 取值范围为 `10ms - 2147483647ms(24d20h31min23s647ms)`
+    /// 
+    /// # Note
+    /// 当定时器被注册时，会立即开始循环计时，每次计时结束后都会触发过程回调函数，直到计时器被取消或窗口被销毁
+    fn set_timer(&self, duration: Duration) -> super::Result<Timer> {
+        thread_local! {
+            static NEXT_TIMER_ID: RefCell<usize> = RefCell::new(0);
+        }
+        let uid = NEXT_TIMER_ID.with_borrow_mut(|f| {
+            *f += 1;
+            *f
+        });
+        unsafe {
+            if SetTimer(
+                self.get_handle() as _,
+                uid,
+                duration.as_millis().min(i32::MAX as _) as _,
+                None,
+            ) == 0
+            {
+                check_error()?;
+            }
+        };
+        Ok(Timer::new(self.get_handle() as _, uid))
     }
 }
 

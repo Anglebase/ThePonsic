@@ -7,6 +7,7 @@ pub mod gen_by_py;
 pub mod window;
 /// 模态对话框
 pub mod dialog;
+pub mod timer;
 
 pub type Result<T> = std::result::Result<T, SystemError>;
 
