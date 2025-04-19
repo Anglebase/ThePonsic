@@ -3,7 +3,7 @@ use winapi::{
     um::winuser::*,
 };
 
-use crate::{graphics::Context, Timer};
+use crate::{TimerId, graphics::Context};
 
 /// 按键标识
 ///
@@ -462,7 +462,7 @@ pub enum Event<'a> {
         context: Context,
     },
     Timer {
-        id: Timer,
+        id: TimerId,
     },
     NoClient(NoClient),
     Window(WindowEvent<'a>),

@@ -1,4 +1,4 @@
-use crate::{events::*, graphics::Context, win::window::WindowHandle, Timer};
+use crate::{events::*, graphics::Context, win::window::WindowHandle, TimerId};
 pub use winapi::shared::windef::HWND;
 use winapi::shared::{
     minwindef::{LPARAM, UINT, WPARAM},
@@ -206,7 +206,7 @@ pub const fn translate(hwnd: &HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM) -
         WM_NCHITTEST => translate_nc_hit_test(lparam),
         WM_NCMOUSEMOVE => translate_nc_mouse_move_event(wparam, lparam),
         WM_TIMER => Event::Timer {
-            id: Timer::new(*hwnd as _, wparam as _),
+            id: TimerId::new(wparam as _),
         },
         _ if msg >= WM_USER => Event::Window(WindowEvent::UserDef {
             msg,
